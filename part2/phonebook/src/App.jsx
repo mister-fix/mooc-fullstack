@@ -35,7 +35,7 @@ const App = () => {
 			id: persons.length + 1,
 		};
 
-		const personExists = persons
+		const checkPerson = persons
 			.map((person) => person.name)
 			.includes(personObject.name);
 
@@ -43,11 +43,12 @@ const App = () => {
 		// 	(person) => person.name === newPersonName
 		// );
 
-		if (personExists) {
-			alert(`${newName} is already added to the phonebook`);
-		} else {
-			setPersons(persons.concat(personObject));
-		}
+		checkPerson
+			? alert(`${newName} is already added to phonebook`)
+			: setPersons([...persons, personObject]);
+
+		setNewName("");
+		setNewNumber("");
 	};
 
 	const filteredPhoneBook =
