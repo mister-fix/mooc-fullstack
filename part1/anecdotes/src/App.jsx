@@ -1,22 +1,5 @@
 import { useState } from "react";
 
-const Header = (props) => {
-	return <h1>{props.text}</h1>;
-};
-
-const Button = (props) => {
-	return <button onClick={props.eventHandler}>{props.text}</button>;
-};
-
-const Anecdote = (props) => {
-	return (
-		<>
-			<p>{props.text}</p>
-			<p>has {props.votes} votes</p>
-		</>
-	);
-};
-
 const App = () => {
 	const anecdotes = [
 		"If it hurts, do it more often.",
@@ -31,13 +14,13 @@ const App = () => {
 
 	const [selected, setSelected] = useState(0);
 	const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
-	const highestVotedIndex = votes.indexOf(Math.max(...votes));
+	const [mostVotes, setMostVotes] = useState(0);
 
-	const handleAnecdoteSelection = () => {
-		// Generating random number where maximum value is the length of the anecdotes array
-		const randomIndex = Math.floor(Math.random() * anecdotes.length);
-		// Setting randomly generated number to the selected variable
-		setSelected(randomIndex);
+	const getRandomNumber = () => {
+		for (;;) {
+			const randomNum = Math.floor(Math.random() * anecdotes.length);
+			if (randomNum !== selected) return randomNum;
+		}
 	};
 
 	const handleVote = () => {
@@ -47,37 +30,28 @@ const App = () => {
 		newVotes[selected] += 1;
 		// Updating the votes
 		setVotes(newVotes);
+
+		if (newVotes[selected] > votes[mostVotes]) {
+			setMostVotes(selected);
+		}
 	};
 
 	return (
 		<div>
 			<div>
-				<Header text="Anecdote of the day" />
-
-				<Anecdote
-					text={anecdotes[selected]}
-					votes={votes[selected]}
-				/>
-
+				<h2>Anecdote of the day</h2>
+				<div>{anecdotes[selected]}</div>
+				<div>has {votes[selected]} votes</div>
 				<div>
-					<Button
-						eventHandler={handleVote}
-						text="vote"
-					/>
-					<Button
-						eventHandler={handleAnecdoteSelection}
-						text="next anecdote"
-					/>
+					<button onClick={handleVote}>vote</button>
+					<button onClick={() => setSelected(getRandomNumber)}>
+						next anecdote
+					</button>
 				</div>
-			</div>
 
-			<div>
-				<Header text="Anecdote with most votes" />
-
-				<Anecdote
-					text={anecdotes[highestVotedIndex]}
-					votes={votes[highestVotedIndex]}
-				/>
+				<h2>Anecdote with most votes</h2>
+				<div>{anecdotes[mostVotes]}</div>
+				<div>has {votes[mostVotes]} votes</div>
 			</div>
 		</div>
 	);
