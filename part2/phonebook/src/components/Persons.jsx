@@ -1,9 +1,10 @@
-const Persons = (props) => {
+const Persons = ({ phonebook, deletePerson }) => {
 	return (
 		<div>
-			{props.phonebook.map((person) => (
+			{phonebook.map((person) => (
 				<div key={person.id}>
-					{person.name} {person.number}
+					{person.name} {person.number}{" "}
+					<button onClick={() => deletePerson(person.id)}>delete</button>
 				</div>
 			))}
 		</div>
