@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
@@ -9,6 +10,10 @@ const App = () => {
 	const [filterBy, setFilterBy] = useState("");
 	const [newName, setNewName] = useState("");
 	const [newNumber, setNewNumber] = useState("");
+	const [notification, setNotification] = useState({
+		message: null,
+		type: null,
+	});
 
 	useEffect(() => {
 		personService.getPersons().then((initialPersons) => {
@@ -61,6 +66,14 @@ const App = () => {
 						);
 						setNewName("");
 						setNewNumber("");
+
+						setNotification({
+							message: `Updated ${personToUpdate.name}`,
+							type: "success",
+						});
+						setTimeout(() => {
+							setNotification({ message: null, type: null });
+						}, 5000);
 					});
 			}
 		} else {
@@ -68,6 +81,14 @@ const App = () => {
 				setPersons([...persons, returnedPerson]);
 				setNewName("");
 				setNewNumber("");
+
+				setNotification({
+					message: `Added ${returnedPerson.name}`,
+					type: "success",
+				});
+				setTimeout(() => {
+					setNotification({ message: null, type: null });
+				}, 5000);
 			});
 		}
 	};
@@ -81,10 +102,23 @@ const App = () => {
 				.removePerson(id)
 				.then(() => {
 					setPersons(persons.filter((person) => person.id !== id));
+					setNotification({
+						message: `${person.name} was removed`,
+						type: "warning",
+					});
+					setTimeout(() => {
+						setNotification({ message: null, type: null });
+					}, 5000);
 				})
 				.catch((error) => {
-					alert(`${person.name} was already deleted`);
-					console.error(error.message);
+					// console.error(error.message);
+					setNotification({
+						message: `Information on ${person.name} has already been removed from server`,
+						type: "warning",
+					});
+					setTimeout(() => {
+						setNotification({ message: null, type: null });
+					}, 5000);
 				});
 		}
 	};
@@ -100,6 +134,11 @@ const App = () => {
 		<>
 			<div>
 				<h2>Phonebook</h2>
+
+				<Notification
+					message={notification.message}
+					type={notification.type}
+				/>
 
 				<Filter
 					value={filterBy}
