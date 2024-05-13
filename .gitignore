@@ -3,3 +3,6 @@ part1/1.1-1.5
 
 # Ignore exercises 
 part2/2.1-2.20
+
+# Environment variables
+.env
