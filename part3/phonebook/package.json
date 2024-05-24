@@ -6,7 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "prod:logs": "fly logs"
+    "build:ui": "rd /s /q dist && npm --prefix ..\\..\\part2\\phonebook run build && xcopy /e /i ..\\..\\part2\\phonebook\\dist .\\dist",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "fly logs"
   },
   "keywords": [],
   "author": "Stephen Mwingira",
