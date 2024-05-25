@@ -1,12 +1,11 @@
 const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 3001;
 
-app.use(express.static("dist"));
+require("dotenv").config();
 
-let persons = [
+const Person = require("./models/person");
+
+/*let persons = [
 	{
 		id: 1,
 		name: "Arto Hellas",
@@ -27,10 +26,16 @@ let persons = [
 		name: "Mary Poppendieck",
 		number: "39-23-6423122",
 	},
-];
+];*/
+
+app.use(express.static("dist"));
+
+const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
+
+const morgan = require("morgan");
 
 morgan.token("body", (request, response) => {
 	return request.method === "POST" ? JSON.stringify(request.body) : "";
@@ -49,18 +54,15 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-	response.json(persons);
+	Person.find({}).then((people) => {
+		response.json(people);
+	});
 });
 
 app.get("/api/persons/:id", (request, response) => {
-	const id = Number(request.params.id);
-	const person = persons.find((p) => p.id === id);
-
-	if (person) {
+	Person.findById(request.params.id).then((person) => {
 		response.json(person);
-	} else {
-		response.status(404).end();
-	}
+	});
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -70,18 +72,18 @@ app.delete("/api/persons/:id", (request, response) => {
 	response.status(204).end();
 });
 
-const checkPerson = (name) => {
+/*const checkPerson = (name) => {
 	return persons.some(
 		(person) => person.name.toLowerCase() === name.toLowerCase()
 	);
-};
+};*/
 
-const generateId = () => {
+/*const generateId = () => {
 	const newId = Math.floor(Math.random() * 9000) + 1000;
 	const isUnique = !persons.some((person) => person.id === newId);
 
 	return isUnique ? newId : generateId();
-};
+};*/
 
 app.post("/api/persons", (request, response) => {
 	const body = request.body;
@@ -90,23 +92,19 @@ app.post("/api/persons", (request, response) => {
 		return response.status(400).json({
 			error: "missing name or number",
 		});
-	} else if (checkPerson(body.name)) {
-		return response.status(400).json({
-			error: "name must be unique",
-		});
 	}
 
-	const person = {
+	const person = new Person({
 		name: body.name,
 		number: body.number,
-		id: generateId(),
-	};
+	});
 
-	persons = persons.concat(person);
-
-	response.json(person);
+	person.save().then((savedPerson) => {
+		response.json(savedPerson);
+	});
 });
 
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });
