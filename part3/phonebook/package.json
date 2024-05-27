@@ -9,7 +9,8 @@
     "build:ui": "rd /s /q dist && npm --prefix ..\\..\\part2\\phonebook run build && xcopy /e /i ..\\..\\part2\\phonebook\\dist .\\dist",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "Stephen Mwingira",
@@ -24,6 +25,9 @@
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.7",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
     "nodemon": "^3.1.0"
   }
 }
