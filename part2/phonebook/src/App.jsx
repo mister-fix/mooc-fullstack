@@ -77,19 +77,31 @@ const App = () => {
 					});
 			}
 		} else {
-			personService.createPerson(personObject).then((returnedPerson) => {
-				setPersons([...persons, returnedPerson]);
-				setNewName("");
-				setNewNumber("");
+			personService
+				.createPerson(personObject)
+				.then((returnedPerson) => {
+					setPersons([...persons, returnedPerson]);
 
-				setNotification({
-					message: `Added ${returnedPerson.name}`,
-					type: "success",
+					setNotification({
+						message: `Added ${returnedPerson.name}`,
+						type: "success",
+					});
+					setTimeout(() => {
+						setNotification({ message: null, type: null });
+					}, 5000);
+				})
+				.catch((error) => {
+					setNotification({
+						message: `${error.response.data.error}`,
+						type: "warning",
+					});
+					setTimeout(() => {
+						setNotification({ message: null, type: null });
+					}, 5000);
 				});
-				setTimeout(() => {
-					setNotification({ message: null, type: null });
-				}, 5000);
-			});
+
+			setNewName("");
+			setNewNumber("");
 		}
 	};
 
@@ -111,7 +123,7 @@ const App = () => {
 					}, 5000);
 				})
 				.catch((error) => {
-					// console.error(error.message);
+					console.error(error.message);
 					setNotification({
 						message: `Information on ${person.name} has already been removed from server`,
 						type: "warning",
