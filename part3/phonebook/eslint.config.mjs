@@ -1,8 +1,12 @@
 import globals from "globals";
+import js from "@eslint/js";
 import stylisticJs from "@stylistic/eslint-plugin-js";
 
 export default [
-	{ ignores: ["node_modules/**", "dist/**"] },
+	js.configs.recommended,
+	{
+		ignores: ["node_modules/**", "dist/**"],
+	},
 	{
 		files: ["**/*.js"],
 		languageOptions: {
@@ -30,7 +34,8 @@ export default [
 					after: true,
 				},
 			],
-			"no-console": 0,
+			"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+			"no-console": "off",
 		},
 	},
 	{
@@ -43,7 +48,7 @@ export default [
 			ecmaVersion: "latest",
 		},
 		rules: {
-			// Specific rules for .eslintrc files
+			indent: ["error", 2],
 		},
 	},
 ];
