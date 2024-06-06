@@ -126,17 +126,16 @@ describe("when there is initally some blogs saved", () => {
 		test("succeeds when updating blog likes", async () => {
 			const blogsAtStart = await helper.blogsInDb();
 			const blogToUpdate = blogsAtStart[0];
-			const newLikes = 12;
 
 			const response = await api
 				.put(`/api/blogs/${blogToUpdate.id}`)
-				.send({ likes: newLikes })
+				.send({ likes: 12 })
 				.expect(200)
 				.expect("Content-Type", /application\/json/);
 
 			const updatedBlog = response.body;
 
-			assert.strictEqual(updatedBlog.likes, newLikes);
+			assert.strictEqual(updatedBlog.likes, 12);
 			assert.strictEqual(updatedBlog.title, blogToUpdate.title);
 			assert.strictEqual(updatedBlog.author, blogToUpdate.author);
 			assert.strictEqual(updatedBlog.url, blogToUpdate.url);
