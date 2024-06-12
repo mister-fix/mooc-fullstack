@@ -14,16 +14,18 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.0"
-  },
-  "devDependencies": {
+    },
+    "devDependencies": {
     "@eslint/js": "^9.3.0",
     "@stylistic/eslint-plugin-js": "^2.1.0",
-    "cross-env": "^7.0.3",
     "eslint": "^9.3.0",
     "globals": "^15.3.0",
     "nodemon": "^3.1.2",
