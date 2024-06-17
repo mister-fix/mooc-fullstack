@@ -37,7 +37,7 @@ describe('when there is initally some blogs saved', () => {
     await user.save()
 
     const blogObjects = helper.initialBlogs.map(
-      (blog) => new Blog({ ...blog, user: user._id }),
+      (blog) => new Blog({ ...blog, user: user._id })
     )
     const promiseArray = blogObjects.map((blog) => blog.save())
     const savedBlogs = await Promise.all(promiseArray)
@@ -64,8 +64,6 @@ describe('when there is initally some blogs saved', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    // console.log(response)
-
     assert.strictEqual(response.body.length, helper.initialBlogs.length)
   })
 
@@ -82,7 +80,7 @@ describe('when there is initally some blogs saved', () => {
     blogs.forEach((blog) => {
       assert(
         Object.prototype.hasOwnProperty.call(blog, 'id'),
-        'Blog does not have id property',
+        'Blog does not have id property'
       )
     })
   })
