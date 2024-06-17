@@ -20,6 +20,15 @@ const userExtractor = async (request, response, next) => {
   next()
 }
 
+const getTokenForUser = async (user) => {
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  }
+
+  return jwt.sign(userForToken, process.env.JWT_SECRET)
+}
+
 const unknownEndpoint = (request, response) => {
   return response.status(404).json({ erro: 'unknown endpoint' })
 }
@@ -50,6 +59,7 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
   tokenExtractor,
   userExtractor,
+  getTokenForUser,
   unknownEndpoint,
   errorHandler,
 }
