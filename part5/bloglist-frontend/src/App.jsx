@@ -11,9 +11,6 @@ const App = () => {
 	const [user, setUser] = useState(null);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const [blogTitle, setBlogTitle] = useState("");
-	const [blogAuthor, setBlogAuthor] = useState("");
-	const [blogUrl, setBlogUrl] = useState("");
 	const [notification, setNotification] = useState({
 		message: null,
 		type: null,
@@ -56,7 +53,11 @@ const App = () => {
 
 	const addBlog = (blogObject) => {
 		blogFormRef.current.toggleVisibility();
-		blogService.create(blogObject).then((returnedBlog) => {
+		const blogToCreate = {
+			...blogObject,
+			user: { username: user.username, name: user.name, id: user.id }, // Add user details here
+		};
+		blogService.create(blogToCreate).then((returnedBlog) => {
 			setBlogs(blogs.concat(returnedBlog));
 			setNotification({
 				message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
@@ -76,6 +77,36 @@ const App = () => {
 		blogService.update(id, updatedBlog).then((returnedBlog) => {
 			setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
 		});
+	};
+
+	const handleDelete = (event, id) => {
+		event.preventDefault();
+
+		const blog = blogs.find((b) => b.id === id);
+		const accept = window.confirm(
+			`Remove blog ${blog.title} by ${blog.author}?`
+		);
+
+		if (accept) {
+			blogService.remove(id).then(() => {
+				setBlogs(blogs.filter((blog) => blog.id !== id));
+				setNotification({
+					message: `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
+					type: "warning",
+				});
+				setTimeout(() => {
+					setNotification({ message: null, type: null });
+				}, 5000);
+			});
+		} else {
+			setNotification({
+				message: `Blog ${blog.title} has already been removed from the server`,
+				type: "warning",
+			});
+			setTimeout(() => {
+				setNotification({ message: null, type: null });
+			}, 5000);
+		}
 	};
 
 	const handleLogout = () => {
@@ -140,13 +171,16 @@ const App = () => {
 				<BlogForm createBlog={addBlog} />
 			</Togglable>
 
-			{blogs.map((blog) => (
-				<Blog
-					key={blog.id}
-					blog={blog}
-					handleLike={handleLike}
-				/>
-			))}
+			{blogs
+				.sort((a, b) => b.likes - a.likes)
+				.map((blog) => (
+					<Blog
+						key={blog.id}
+						blog={blog}
+						handleLike={handleLike}
+						handleDelete={handleDelete}
+					/>
+				))}
 		</div>
 	);
 
