@@ -10,5 +10,5 @@ exports.createBlog = async (page, content) => {
 	await page.getByTestId("author").fill(content.author);
 	await page.getByTestId("url").fill(content.url);
 	await page.getByRole("button", { name: "create" }).click();
-	await page.getByText(content.title).waitFor();
+	await page.getByTestId("blog-title").waitFor();
 };
