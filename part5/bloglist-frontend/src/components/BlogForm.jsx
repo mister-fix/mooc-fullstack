@@ -57,10 +57,10 @@ const BlogForm = ({ createBlog }) => {
   )
 }
 
-BlogForm.propTypes = {
-  title: PropTypes.string.isRequired,
-  author: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
-}
+// BlogForm.propTypes = {
+//   title: PropTypes.string.isRequired,
+//   author: PropTypes.string.isRequired,
+//   url: PropTypes.string.isRequired,
+// }
 
 export default BlogForm
