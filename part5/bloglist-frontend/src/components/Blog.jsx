@@ -17,7 +17,8 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 
   const matchUser = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedUserJSON) {
+
+    if (loggedUserJSON && blog.user) {
       const { username } = JSON.parse(loggedUserJSON)
       return username === blog.user.username
     }
@@ -62,7 +63,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 					likes {blog.likes}{' '}
           <button onClick={(event) => handleLike(event, blog.id)}>like</button>
         </p>
-        <p>{blog.user.name}</p>
+        {/* <p>{blog.user.name}</p> */}
         {matchUser() && (
           <button onClick={(event) => handleDelete(event, blog.id)}>
 						remove
