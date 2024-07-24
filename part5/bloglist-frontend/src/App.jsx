@@ -18,11 +18,22 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON) // Fixing JSON.parse here
-      setUser(user)
       blogService.setToken(user.token)
-      blogService.getAll().then((blogs) => setBlogs(blogs))
+
+      // verifying token validity by attempting to retrieve blogs
+      blogService
+        .getAll()
+        .then((blogs) => {
+          setUser(user)
+          setBlogs(blogs)
+        })
+        .catch((error) => {
+          console.log('Invalid or expired token', error)
+          handleLogout()
+        })
     }
   }, [])
 
@@ -130,6 +141,7 @@ const App = () => {
         <div>
 					username
           <input
+            data-testid="username"
             type="text"
             value={username}
             name="Username"
@@ -139,6 +151,7 @@ const App = () => {
         <div>
 					password
           <input
+            data-testid="password"
             type="password"
             value={password}
             name="Password"
