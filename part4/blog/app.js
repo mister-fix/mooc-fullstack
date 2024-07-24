@@ -17,9 +17,6 @@ logger.info('connecting to database...')
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
-    if (process.env.NODE_ENV === 'test') {
-      console.log(config.MONGODB_URI)
-    }
     logger.info('connected to MongoDB')
   })
   .catch((error) => {
