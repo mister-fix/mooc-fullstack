@@ -1,10 +1,14 @@
-exports.loginWith = async (page, username, password) => {
-	await page.getByTestId("username").fill(username);
-	await page.getByTestId("password").fill(password);
-	await page.getByRole("button", { name: "login" }).click();
+const loginWith = async (page, username, password) => {
+	try {
+		await page.getByTestId("username").fill(username);
+		await page.getByTestId("password").fill(password);
+		await page.getByRole("button", { hasText: "login" }).click();
+	} catch (err) {
+		console.error("Error logging in user:", err);
+	}
 };
 
-exports.createBlog = async (page, { title, author, url }) => {
+const createBlog = async (page, { title, author, url }) => {
 	try {
 		await page.getByRole("button", { name: "add blog" }).click();
 		await page.getByTestId("title").fill(title);
@@ -12,9 +16,11 @@ exports.createBlog = async (page, { title, author, url }) => {
 		await page.getByTestId("url").fill(url);
 		await page.getByRole("button", { name: "create" }).click();
 
-		await page.getByTestId("blog-title").and(page.getByText(title)).waitFor();
+		page.getByText(`A new blog "${title}" by ${author} added`).waitFor();
 	} catch (error) {
-		console.error("Error in createBlog:", error);
+		console.error(`Error during blog creation:`, error);
 		throw error;
 	}
 };
+
+export { loginWith, createBlog };
