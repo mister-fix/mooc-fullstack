@@ -31,24 +31,19 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
       style={blogStyle}
       className="blog"
     >
-      <div>
-        <p
-          className="blog-title"
-          data-testid="blog-title"
-        >
-          {blog.title}
-        </p>{' '}
-        <p
-          className="blog-author"
-          data-testid="blog-author"
-        >
-          {blog.author}
-        </p>{' '}
-        <button onClick={toggleVisibility}>
-          {visibility ? 'hide' : 'view'}
-        </button>
-      </div>
-
+      <p
+        className="blog-title"
+        data-testid="blog-title"
+      >
+        {blog.title}
+      </p>{' '}
+      <p
+        className="blog-author"
+        data-testid="blog-author"
+      >
+        {blog.author}
+      </p>{' '}
+      <button onClick={toggleVisibility}>{visibility ? 'hide' : 'view'}</button>
       <div style={showWhenVisibile}>
         <p
           className="blog-url"

@@ -50,7 +50,7 @@ const App = () => {
       setUsername('')
       setPassword('')
 
-      blogService.getAll().then((blogs) => setBlogs(blogs))
+      await blogService.getAll().then((blogs) => setBlogs(blogs))
       setNotification({ message: null, type: null })
     } catch (exception) {
       setNotification({ message: 'wrong username or password', type: 'error' })
@@ -62,35 +62,49 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    const blogToCreate = {
-      ...blogObject,
-      user: { username: user.username, name: user.name, id: user.id }, // Add user details here
-    }
-    blogService.create(blogToCreate).then((returnedBlog) => {
+  const addBlog = async (blogObject) => {
+    try {
+      blogFormRef.current.toggleVisibility()
+
+      const blogToCreate = {
+        ...blogObject,
+        user: { username: user.username, name: user.name, id: user.id }, // Add user details here
+      }
+
+      const returnedBlog = await blogService.create(blogToCreate)
+
       setBlogs(blogs.concat(returnedBlog))
       setNotification({
-        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        message: `A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`,
         type: 'success',
+      })
+
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000)
+    } catch (error) {
+      console.error('Error creating blog:', error)
+      setNotification({
+        message: 'Error creating blog',
+        type: 'error',
       })
       setTimeout(() => {
         setNotification({ message: null, type: null })
       }, 5000)
-    })
+    }
   }
 
-  const handleLike = (event, id) => {
+  const handleLike = async (event, id) => {
     event.preventDefault()
 
     const blog = blogs.find((b) => b.id === id)
     const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    blogService.update(id, updatedBlog).then((returnedBlog) => {
+    await blogService.update(id, updatedBlog).then((returnedBlog) => {
       setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
     })
   }
 
-  const handleDelete = (event, id) => {
+  const handleDelete = async (event, id) => {
     event.preventDefault()
 
     const blog = blogs.find((b) => b.id === id)
@@ -99,7 +113,7 @@ const App = () => {
     )
 
     if (accept) {
-      blogService.remove(id).then(() => {
+      await blogService.remove(id).then(() => {
         setBlogs(blogs.filter((blog) => blog.id !== id))
         setNotification({
           message: `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
