@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -65,6 +65,21 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
+
+      const existingBlog = blogs.find(
+        (blog) => blog.title === blogObject.title
+      )
+
+      if (existingBlog) {
+        setNotification({
+          message: `Blog with title "${blogObject.title}" already exists`,
+          type: 'error',
+        })
+        setTimeout(() => {
+          setNotification({ message: null, type: null })
+        }, 5000)
+        return
+      }
 
       const blogToCreate = {
         ...blogObject,
