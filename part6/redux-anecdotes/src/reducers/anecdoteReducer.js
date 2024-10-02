@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const anecdotesAtStart = [
 	"If it hurts, do it more often",
 	"Adding manpower to a late software project makes it later!",
@@ -19,17 +21,16 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject);
 
-const reducer = (state = initialState, action) => {
-	console.log("state now: ", state);
-	console.log("action", action);
-
-	switch (action.type) {
-		case "NEW_ANECDOTE": {
+const anecdoteSlice = createSlice({
+	name: "anecdote",
+	initialState,
+	reducers: {
+		createAnecdote(state, action) {
 			return [...state, action.payload];
-		}
-		case "VOTE": {
-			const id = action.payload.id;
-			const anecdoteToChange = state.find((a) => a.id === id);
+		},
+		voteForAnecdote(state, action) {
+			const id = action.payload;
+			const anecdoteToChange = state.find((anecdote) => anecdote.id === id);
 			const changedAnecdote = {
 				...anecdoteToChange,
 				votes: anecdoteToChange.votes + 1,
@@ -38,28 +39,57 @@ const reducer = (state = initialState, action) => {
 			return state.map((anecdote) =>
 				anecdote.id !== id ? anecdote : changedAnecdote
 			);
-		}
-		default:
-			return state;
-	}
-};
-
-export const createAnecdote = (content) => {
-	return {
-		type: "NEW_ANECDOTE",
-		payload: {
-			content,
-			votes: 0,
-			id: generateId(),
 		},
-	};
-};
+	},
+});
 
-export const voteForAnecdote = (id) => {
-	return {
-		type: "VOTE",
-		payload: { id },
-	};
-};
+// Export the action creators that were automatically generated
+export const { createAnecdote, voteForAnecdote } = anecdoteSlice.actions;
 
-export default reducer;
+// Export the reducer to be used in the store
+export default anecdoteSlice.reducer;
+
+// const reducer = (state = initialState, action) => {
+// 	console.log("state now: ", state);
+// 	console.log("action", action);
+
+// 	switch (action.type) {
+// 		case "NEW_ANECDOTE": {
+// 			return [...state, action.payload];
+// 		}
+// 		case "VOTE": {
+// 			const id = action.payload.id;
+// 			const anecdoteToChange = state.find((a) => a.id === id);
+// 			const changedAnecdote = {
+// 				...anecdoteToChange,
+// 				votes: anecdoteToChange.votes + 1,
+// 			};
+
+// 			return state.map((anecdote) =>
+// 				anecdote.id !== id ? anecdote : changedAnecdote
+// 			);
+// 		}
+// 		default:
+// 			return state;
+// 	}
+// };
+
+// export const createAnecdote = (content) => {
+// 	return {
+// 		type: "NEW_ANECDOTE",
+// 		payload: {
+// 			content,
+// 			votes: 0,
+// 			id: generateId(),
+// 		},
+// 	};
+// };
+
+// export const voteForAnecdote = (id) => {
+// 	return {
+// 		type: "VOTE",
+// 		payload: { id },
+// 	};
+// };
+
+// export default reducer;
