@@ -6,18 +6,7 @@ const anecdoteSlice = createSlice({
 	initialState: [],
 	reducers: {
 		// Removed 'createAnecdote' definition from here!
-		voteForAnecdote(state, action) {
-			const id = action.payload;
-			const anecdoteToChange = state.find((anecdote) => anecdote.id === id);
-			const changedAnecdote = {
-				...anecdoteToChange,
-				votes: anecdoteToChange.votes + 1,
-			};
-
-			return state.map((anecdote) =>
-				anecdote.id !== id ? anecdote : changedAnecdote
-			);
-		},
+		// Removed 'voteFotAnecdote' definition from here!
 		// Add 'setAnecdotes' action creator
 		setAnecdotes(state, action) {
 			return action.payload;
@@ -30,8 +19,7 @@ const anecdoteSlice = createSlice({
 });
 
 // Export the action creators that were automatically generated
-export const { voteForAnecdote, setAnecdotes, appendAnecdote } =
-	anecdoteSlice.actions;
+export const { setAnecdotes, appendAnecdote } = anecdoteSlice.actions;
 
 // Define async 'initializeAnecdotes' function to initialize anecdotes to the state
 export const initializeAnecdotes = () => {
@@ -46,6 +34,24 @@ export const createAnecdote = (content) => {
 	return async (dispatch) => {
 		const newNote = await anecdoteService.createNew(content);
 		dispatch(appendAnecdote(newNote));
+	};
+};
+
+// Define async 'voteForAnecdote' action creator to modify selected anecdotes votes and update the state
+// to reflect the incremented votes for the modified anecdotes
+export const voteForAnecdote = (id) => {
+	return async (dispatch, getState) => {
+		// Get the updated anecdote from the backend after voting
+		const updatedAnecdote = await anecdoteService.vote(id);
+		// Get the current anecdotes state
+		const anecdotes = getState().anecdotes;
+		// Create a new array with the updated anecdote
+		const updatedAnecdotes = anecdotes.map((anecdote) =>
+			anecdote.id !== id ? anecdote : updatedAnecdote
+		);
+
+		// Dispatch an action to update the state
+		dispatch(setAnecdotes(updatedAnecdotes));
 	};
 };
 
