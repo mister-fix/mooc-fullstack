@@ -39,7 +39,7 @@ const AnecdoteList = () => {
 		// 		);
 	});
 
-	const handleVoting = (anecdote) => {
+	const handleVoting = async (anecdote) => {
 		dispatch(voteForAnecdote(anecdote.id));
 		dispatch(setNotification(`you voted '${anecdote.content}'`));
 
