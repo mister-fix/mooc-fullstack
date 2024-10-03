@@ -1,15 +1,11 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import anecdoteService from "../services/anecdotes";
 
 const anecdoteSlice = createSlice({
 	name: "anecdote",
 	initialState: [],
 	reducers: {
-		// Modified: only push action.payload and votes as server will handle ID generation
-		createAnecdote(state, action) {
-			state.push(action.payload); // Adds a new anecdote
-			console.log(current(state));
-		},
+		// Removed 'createAnecdote' definition from here!
 		voteForAnecdote(state, action) {
 			const id = action.payload;
 			const anecdoteToChange = state.find((anecdote) => anecdote.id === id);
@@ -34,7 +30,7 @@ const anecdoteSlice = createSlice({
 });
 
 // Export the action creators that were automatically generated
-export const { createAnecdote, voteForAnecdote, setAnecdotes } =
+export const { voteForAnecdote, setAnecdotes, appendAnecdote } =
 	anecdoteSlice.actions;
 
 // Define async 'initializeAnecdotes' function to initialize anecdotes to the state
@@ -42,6 +38,14 @@ export const initializeAnecdotes = () => {
 	return async (dispatch) => {
 		const anecdotes = await anecdoteService.getAll();
 		await dispatch(setAnecdotes(anecdotes));
+	};
+};
+
+// Define async 'createAnecdote' action creator to create new anecdotes and append them to the state
+export const createAnecdote = (content) => {
+	return async (dispatch) => {
+		const newNote = await anecdoteService.createNew(content);
+		dispatch(appendAnecdote(newNote));
 	};
 };
 
