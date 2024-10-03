@@ -34,6 +34,11 @@
       "id": "6401",
       "content": "a new anecdote",
       "votes": 0
+    },
+    {
+      "id": "fa0f",
+      "content": "adding a new anecdote",
+      "votes": 0
     }
   ]
 }
