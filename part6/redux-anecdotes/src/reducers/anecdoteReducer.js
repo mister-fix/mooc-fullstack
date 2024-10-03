@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-const generateId = () => (100000 * Math.random()).toFixed(0);
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const anecdoteSlice = createSlice({
 	name: "anecdote",
 	initialState: [],
 	reducers: {
+		// Modified: only push action.payload and votes as server will handle ID generation
 		createAnecdote(state, action) {
-			state.push({ content: action.payload, votes: 0, id: generateId() }); // Adds a new anecdote
+			state.push(action.payload); // Adds a new anecdote
+			console.log(current(state));
 		},
 		voteForAnecdote(state, action) {
 			const id = action.payload;
