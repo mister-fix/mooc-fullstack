@@ -1,4 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit";
+import anecdoteService from "../services/anecdotes";
 
 const anecdoteSlice = createSlice({
 	name: "anecdote",
@@ -21,13 +22,13 @@ const anecdoteSlice = createSlice({
 				anecdote.id !== id ? anecdote : changedAnecdote
 			);
 		},
-		// Add 'appendAnecdote' action creator
-		appendAnecdote(state, action) {
-			state.push(action.payload);
-		},
 		// Add 'setAnecdotes' action creator
 		setAnecdotes(state, action) {
 			return action.payload;
+		},
+		// Add 'appendAnecdote' action creator
+		appendAnecdote(state, action) {
+			state.push(action.payload);
 		},
 	},
 });
@@ -35,6 +36,14 @@ const anecdoteSlice = createSlice({
 // Export the action creators that were automatically generated
 export const { createAnecdote, voteForAnecdote, setAnecdotes } =
 	anecdoteSlice.actions;
+
+// Define async 'initializeAnecdotes' function to initialize anecdotes to the state
+export const initializeAnecdotes = () => {
+	return async (dispatch) => {
+		const anecdotes = await anecdoteService.getAll();
+		await dispatch(setAnecdotes(anecdotes));
+	};
+};
 
 // Export the reducer to be used in the store
 export default anecdoteSlice.reducer;
