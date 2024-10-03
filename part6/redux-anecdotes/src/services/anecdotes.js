@@ -14,7 +14,20 @@ const createNew = async (content) => {
 	return response.data;
 };
 
+const vote = async (id) => {
+	const anecdotes = await getAll();
+	const anecdoteToChange = anecdotes.find((anecdote) => anecdote.id === id);
+	const changedAnecdote = {
+		...anecdoteToChange,
+		votes: anecdoteToChange.votes + 1,
+	};
+
+	const response = await axios.put(`${baseUrl}/${id}`, changedAnecdote);
+	return response.data;
+};
+
 export default {
 	getAll,
 	createNew,
+	vote,
 };
