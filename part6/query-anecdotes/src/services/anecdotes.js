@@ -13,3 +13,15 @@ export const getAnecdotes = () => {
 			throw new Error("Failed to fetch anecdotes");
 		});
 };
+
+export const createAnecdote = (newAnecdote) => {
+	return axios
+		.post(baseUrl, newAnecdote)
+		.then((response) => {
+			return response.data;
+		})
+		.catch((err) => {
+			console.error("Error:", err.message);
+			throw new Error("Failed to create new anecdote");
+		});
+};
