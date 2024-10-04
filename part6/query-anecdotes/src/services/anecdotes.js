@@ -25,3 +25,22 @@ export const createAnecdote = (newAnecdote) => {
 			throw new Error("Failed to create new anecdote");
 		});
 };
+
+export const voteForAnecdote = async (id) => {
+	const anecdotes = await getAnecdotes();
+	const anecdoteToUpdate = anecdotes.find((anecdote) => anecdote.id === id);
+	const updatedAnecdote = {
+		...anecdoteToUpdate,
+		votes: anecdoteToUpdate.votes + 1,
+	};
+
+	return axios
+		.put(`${baseUrl}/${id}`, updatedAnecdote)
+		.then((response) => {
+			return response.data;
+		})
+		.catch((err) => {
+			console.error("Error:", err.message);
+			throw new Error("Failed to update anecdote");
+		});
+};
