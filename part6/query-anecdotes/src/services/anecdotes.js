@@ -15,6 +15,10 @@ export const getAnecdotes = () => {
 };
 
 export const createAnecdote = (newAnecdote) => {
+	if (newAnecdote.content < 5) {
+		throw new Error("too short anecdote, must have a length 5 or more");
+	}
+
 	return axios
 		.post(baseUrl, newAnecdote)
 		.then((response) => {
@@ -22,6 +26,11 @@ export const createAnecdote = (newAnecdote) => {
 		})
 		.catch((err) => {
 			console.error("Error:", err.message);
+
+			if (err.response && err.response.status === 400) {
+				throw new Error(err.response.data.error);
+			}
+
 			throw new Error("Failed to create new anecdote");
 		});
 };
