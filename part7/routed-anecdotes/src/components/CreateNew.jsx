@@ -22,6 +22,7 @@ const CreateNew = (props) => {
 	const clearFields = (e) => {
 		e.preventDefault();
 
+		// Calling the reset function for the fields
 		content.reset();
 		author.reset();
 		info.reset();
