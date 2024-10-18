@@ -19,6 +19,14 @@ const CreateNew = (props) => {
 		navigate("/");
 	};
 
+	const clearFields = (e) => {
+		e.preventDefault();
+
+		content.reset();
+		author.reset();
+		info.reset();
+	};
+
 	return (
 		<div>
 			<h2>create a new anecdote</h2>
@@ -27,24 +35,28 @@ const CreateNew = (props) => {
 					content
 					<input
 						name="content"
-						{...content}
+						value={content.value}
+						onChange={content.onChange}
 					/>
 				</div>
 				<div>
 					author
 					<input
 						name="author"
-						{...author}
+						value={author.value}
+						onChange={author.onChange}
 					/>
 				</div>
 				<div>
 					url for more info
 					<input
 						name="info"
-						{...info}
+						value={info.value}
+						onChange={info.onChange}
 					/>
 				</div>
 				<button>create</button>
+				<button onClick={clearFields}>reset</button>
 			</form>
 		</div>
 	);

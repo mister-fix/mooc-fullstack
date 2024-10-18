@@ -16,10 +16,16 @@ export const useField = (type) => {
 		setValue(e.target.value);
 	};
 
+	// Rest value function, clears the form field value
+	const reset = () => {
+		setValue("");
+	};
+
 	// Returning the field type, value, and onChange handler
 	return {
 		type,
 		value,
 		onChange,
+		reset,
 	};
 };
