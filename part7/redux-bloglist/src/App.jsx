@@ -1,20 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import { setNotification } from './reducers/notificationReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
+  const dispatch = useDispatch();
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [notification, setNotification] = useState({
-    message: null,
-    type: null,
-  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -53,10 +52,7 @@ const App = () => {
       await blogService.getAll().then((blogs) => setBlogs(blogs));
       setNotification({ message: null, type: null });
     } catch (error) {
-      setNotification({ message: 'Wrong username or password', type: 'error' });
-      setTimeout(() => {
-        setNotification({ message: null, type: null });
-      }, 5000);
+      dispatch(setNotification('Wrong username or password', 5));
     }
   };
 
@@ -64,20 +60,18 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     try {
-      blogFormRef.current.toggleVisibiltiy();
+      blogFormRef.current.toggleVisibility();
 
-      const existingBlog = blogFormRef.find(
+      const existingBlog = blogs.find(
         (blog) => blog.title === blogObject.title,
       );
 
       if (existingBlog) {
-        setNotification({
-          message: `Blog with title "${blogObject.title}" already exists`,
-          type: 'error',
-        });
-        setTimeout(() => {
-          setNotification({ message: null, type: null });
-        }, 5000);
+        dispatch(
+          setNotification(
+            `Blog with title "${blogObject.title}" already exists`,
+          ),
+        );
         return;
       }
 
@@ -89,23 +83,15 @@ const App = () => {
       const returnedBlog = await blogService.create(blogToCreate);
 
       setBlogs(blogs.concat(returnedBlog));
-      setNotification({
-        message: `A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`,
-        type: 'success',
-      });
-
-      setTimeout(() => {
-        setNotification({ message: null, type: null });
-      }, 5000);
+      dispatch(
+        setNotification(
+          `A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`,
+          5,
+        ),
+      );
     } catch (error) {
       console.error('Error creating blog:', error);
-      setNotification({
-        message: 'Error creating blog',
-        type: 'error',
-      });
-      setTimeout(() => {
-        setNotification({ message: null, type: null });
-      }, 5000);
+      dispatch(setNotification('Error creating blog', 5));
     }
   };
 
@@ -130,22 +116,20 @@ const App = () => {
     if (accept) {
       await blogService.remove(id).then(() => {
         setBlogs(blogs.filter((blog) => blog.id !== id));
-        setNotification({
-          message: `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
-          type: 'warning',
-        });
-        setTimeout(() => {
-          setNotification({ message: null, type: null });
-        }, 5000);
+        dispatch(
+          setNotification(
+            `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
+            5,
+          ),
+        );
       });
     } else {
-      setNotification({
-        message: `Blog ${blog.title} has already been removed from the server`,
-        type: 'warning',
-      });
-      setTimeout(() => {
-        setNotification({ message: null, type: null });
-      }, 5000);
+      dispatch(
+        setNotification(
+          `Blog ${blog.title} has already been removed from the server`,
+          5,
+        ),
+      );
     }
   };
 
@@ -161,7 +145,7 @@ const App = () => {
     <div>
       <h2>log in to application</h2>
 
-      <Notification message={notification.message} type={notification.type} />
+      <Notification />
 
       <form onSubmit={handleLogin}>
         <div>
@@ -192,7 +176,7 @@ const App = () => {
       <div>
         <h2>blogs</h2>
 
-        <Notification message={notification.message} type={notification.type} />
+        <Notification />
 
         <p>
           {user.name} logged in <button onClick={handleLogout}>logout</button>
