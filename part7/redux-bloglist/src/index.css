@@ -1,7 +1,7 @@
 .notification {
     border-width: 3px;
     border-style: solid;
-    border-radius: 5px;
+    border-radius: 8px;
     background-color: lightgrey;
     padding: 12px;
     font-size: 18px;
@@ -9,18 +9,21 @@
 }
 
 .notification-success {
-    color: green;
-    border-color: green;
+    color: #0A3622;
+    border-color: #0A3622;
+    background: #D1E7DD;
 }
 
 .notification-warning {
-    color: yellow;
-    border-color: yellow;
+    color: #664D03;
+    border-color: #664D03;
+    background: #FFF3CD;
 }
 
 .notification-error {
-    color: red;
-    border-color: red;
+    color: #90151C;
+    border-color: #90151C;
+    background: #F8D7DA;
 }
 
 p {
