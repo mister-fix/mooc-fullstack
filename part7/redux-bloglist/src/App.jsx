@@ -6,6 +6,7 @@ import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import {
   createBlog,
+  deleteBlog,
   initializeBlogs,
   likeBlog,
   resetBlogs,
@@ -33,27 +34,23 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON); // Fixing JSON.parse here
       blogService.setToken(user.token);
+      setUser(user);
 
       // verifying token validity by attempting to retrieve blogs
       dispatch(initializeBlogs());
-      setUser(user);
     }
   }, [dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
     try {
       const user = await loginService.login({ username, password });
-
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       blogService.setToken(user.token);
-
       setUser(user);
       setUsername('');
       setPassword('');
-
-      await dispatch(initializeBlogs);
+      dispatch(initializeBlogs()); // Fetch blogs after login
     } catch (error) {
       dispatch(setNotification('Wrong username or password', 5));
     }
@@ -112,32 +109,29 @@ const App = () => {
       `Remove blog ${blog.title} by ${blog.author}`,
     );
 
-    // if (accept) {
-    //   await blogService.remove(id).then(() => {
-    //     setBlogs(blogs.filter((blog) => blog.id !== id));
-    //     dispatch(
-    //       setNotification(
-    //         `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
-    //         5,
-    //       ),
-    //     );
-    //   });
-    // } else {
-    //   dispatch(
-    //     setNotification(
-    //       `Blog ${blog.title} has already been removed from the server`,
-    //       5,
-    //     ),
-    //   );
-    // }
+    if (accept) {
+      dispatch(deleteBlog(blog.id));
+      dispatch(
+        setNotification(
+          `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
+          5,
+        ),
+      );
+    } else {
+      dispatch(
+        setNotification(
+          `Blog ${blog.title} has already been removed from the server`,
+          5,
+        ),
+      );
+    }
   };
 
   const handleLogout = () => {
-    console.log('logged out');
+    dispatch(resetBlogs()); // Clear blogs
     window.localStorage.removeItem('loggedBlogAppUser');
     blogService.setToken(null);
     setUser(null);
-    dispatch(resetBlogs()); // Clear blogs on logout
   };
 
   const loginView = () => (
