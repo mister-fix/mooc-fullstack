@@ -1,16 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import {
+  appendBlog,
+  initializeBlogs,
+  resetBlogs,
+} from './reducers/blogsReducer';
 import { setNotification } from './reducers/notificationReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
   const dispatch = useDispatch();
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector((state) => {
+    const blogs = state.blogs;
+    const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+
+    return sortedBlogs;
+  });
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,18 +34,10 @@ const App = () => {
       blogService.setToken(user.token);
 
       // verifying token validity by attempting to retrieve blogs
-      blogService
-        .getAll()
-        .then((blogs) => {
-          setUser(user);
-          setBlogs(blogs);
-        })
-        .catch((error) => {
-          console.error('Invalid or expired token', error);
-          handleLogout();
-        });
+      dispatch(initializeBlogs());
+      setUser(user);
     }
-  }, []);
+  }, [dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -49,8 +52,7 @@ const App = () => {
       setUsername('');
       setPassword('');
 
-      await blogService.getAll().then((blogs) => setBlogs(blogs));
-      setNotification({ message: null, type: null });
+      dispatch(initializeBlogs);
     } catch (error) {
       dispatch(setNotification('Wrong username or password', 5));
     }
@@ -82,7 +84,7 @@ const App = () => {
 
       const returnedBlog = await blogService.create(blogToCreate);
 
-      setBlogs(blogs.concat(returnedBlog));
+      dispatch(appendBlog(blogs.concat(returnedBlog)));
       dispatch(
         setNotification(
           `A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`,
@@ -100,9 +102,9 @@ const App = () => {
 
     const blog = blogs.find((b) => b.id === id);
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    await blogService.update(id, updatedBlog).then((returnedBlog) => {
-      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
-    });
+    // await blogService.update(id, updatedBlog).then((returnedBlog) => {
+    //   setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
+    // });
   };
 
   const handleDelete = async (event, id) => {
@@ -113,24 +115,24 @@ const App = () => {
       `Remove blog ${blog.title} by ${blog.author}`,
     );
 
-    if (accept) {
-      await blogService.remove(id).then(() => {
-        setBlogs(blogs.filter((blog) => blog.id !== id));
-        dispatch(
-          setNotification(
-            `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
-            5,
-          ),
-        );
-      });
-    } else {
-      dispatch(
-        setNotification(
-          `Blog ${blog.title} has already been removed from the server`,
-          5,
-        ),
-      );
-    }
+    // if (accept) {
+    //   await blogService.remove(id).then(() => {
+    //     setBlogs(blogs.filter((blog) => blog.id !== id));
+    //     dispatch(
+    //       setNotification(
+    //         `Blog '${blog.title} by ${blog.author}' has been removed from the server`,
+    //         5,
+    //       ),
+    //     );
+    //   });
+    // } else {
+    //   dispatch(
+    //     setNotification(
+    //       `Blog ${blog.title} has already been removed from the server`,
+    //       5,
+    //     ),
+    //   );
+    // }
   };
 
   const handleLogout = () => {
@@ -138,7 +140,7 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser');
     blogService.setToken(null);
     setUser(null);
-    setBlogs([]); // Clear blogs on logout
+    dispatch(resetBlogs()); // Clear blogs on logout
   };
 
   const loginView = () => (
