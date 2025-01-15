@@ -40,20 +40,20 @@ export const resetBlogs = () => {
   };
 };
 
-export const likeBlog = (id, targetBlog) => {
-  return async (dispatch, getState) => {
-    // Get the updated blog from the backend after voting
-    const updatedBlog = await blogService.update(id, targetBlog);
-    // Get the current blogs state
-    const blogs = getState().blogs;
-    // Create a new array with the updated blogs
-    const updatedBlogs = blogs.map((blog) =>
-      blog.id !== id ? blog : updatedBlog,
-    );
+// export const likeBlog = (id, targetBlog) => {
+//   return async (dispatch, getState) => {
+//     // Get the updated blog from the backend after voting
+//     const updatedBlog = await blogService.update(id, targetBlog);
+//     // Get the current blogs state
+//     const blogs = getState().blogs;
+//     // Create a new array with the updated blogs
+//     const updatedBlogs = blogs.map((blog) =>
+//       blog.id !== id ? blog : updatedBlog,
+//     );
 
-    // Dispatch an action to update the blogs state
-    dispatch(setBlogs(updatedBlogs));
-  };
-};
+//     // Dispatch an action to update the blogs state
+//     dispatch(setBlogs(updatedBlogs));
+//   };
+// };
 
 export default blogSlice.reducer;

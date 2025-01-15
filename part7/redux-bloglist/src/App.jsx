@@ -7,7 +7,6 @@ import Togglable from './components/Togglable';
 import {
   createBlog,
   initializeBlogs,
-  likeBlog,
   resetBlogs,
 } from './reducers/blogsReducer';
 import { setNotification } from './reducers/notificationReducer';
@@ -101,7 +100,6 @@ const App = () => {
 
     const blog = blogs.find((b) => b.id === id);
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    dispatch(likeBlog(id, updatedBlog));
   };
 
   const handleDelete = async (event, id) => {
