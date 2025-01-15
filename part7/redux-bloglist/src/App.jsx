@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
@@ -12,21 +12,17 @@ import {
   resetBlogs,
 } from './reducers/blogsReducer';
 import { setNotification } from './reducers/notificationReducer';
+import { clearUser, setUser } from './reducers/userReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
   const dispatch = useDispatch();
-  // const [blogs, setBlogs] = useState([]);
   const blogs = useSelector((state) => {
-    const blogs = state.blogs;
-    const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
-
+    const sortedBlogs = [...state.blogs].sort((a, b) => b.likes - a.likes);
     return sortedBlogs;
   });
-  const [user, setUser] = useState(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const user = useSelector((state) => state.user?.user || null);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -34,7 +30,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON); // Fixing JSON.parse here
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user)); // Set user in the Redux store
 
       // verifying token validity by attempting to retrieve blogs
       dispatch(initializeBlogs());
@@ -43,13 +39,14 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
     try {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
+      dispatch(setUser(user)); // Update the Redux store
       dispatch(initializeBlogs()); // Fetch blogs after login
     } catch (error) {
       dispatch(setNotification('Wrong username or password', 5));
@@ -129,9 +126,9 @@ const App = () => {
 
   const handleLogout = () => {
     dispatch(resetBlogs()); // Clear blogs
+    dispatch(clearUser()); // Clear user from Redux store
     window.localStorage.removeItem('loggedBlogAppUser');
     blogService.setToken(null);
-    setUser(null);
   };
 
   const loginView = () => (
@@ -142,22 +139,10 @@ const App = () => {
 
       <form onSubmit={handleLogin}>
         <div>
-          username:{' '}
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
+          username: <input type="text" name="username" />
         </div>
         <div>
-          password:{' '}
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
+          password: <input type="password" name="password" />
         </div>
         <button type="submit">login</button>
       </form>
