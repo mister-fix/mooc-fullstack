@@ -29,8 +29,8 @@ export const initializeBlogs = () => {
 
 export const createBlog = (content) => {
   return async (dispatch) => {
-    const newBlog = await blogService.create(content);
-    dispatch(appendBlog(newBlog));
+    const newBlog = await blogService.create(content); // Create the blog via the service
+    dispatch(appendBlog(newBlog)); // Append the newly created blog to the Redux store
   };
 };
 

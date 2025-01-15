@@ -5,7 +5,7 @@ import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import {
-  appendBlog,
+  createBlog,
   initializeBlogs,
   resetBlogs,
 } from './reducers/blogsReducer';
@@ -52,7 +52,7 @@ const App = () => {
       setUsername('');
       setPassword('');
 
-      dispatch(initializeBlogs);
+      await dispatch(initializeBlogs);
     } catch (error) {
       dispatch(setNotification('Wrong username or password', 5));
     }
@@ -82,12 +82,10 @@ const App = () => {
         user: { username: user.username, name: user.name, id: user.id }, // Add user details here
       };
 
-      const returnedBlog = await blogService.create(blogToCreate);
-
-      dispatch(appendBlog(blogs.concat(returnedBlog)));
+      dispatch(createBlog(blogToCreate));
       dispatch(
         setNotification(
-          `A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`,
+          `A new blog "${blogToCreate.title}" by ${blogToCreate.author} added`,
           5,
         ),
       );
