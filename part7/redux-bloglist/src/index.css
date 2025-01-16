@@ -29,3 +29,17 @@
 p {
     margin: 0
 }
+
+nav {
+    display: flex;
+    background-color: lightgrey;
+    padding: 8px;
+}
+
+nav div:first-of-type {
+    margin-right: 1rem;
+}
+
+nav .nav-link:not(:last-of-type) {
+    margin-right: 0.5rem;
+}
