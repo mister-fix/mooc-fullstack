@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const { userExtractor } = require('../utils/middleware')
+const commentsRouter = require('./comment')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -80,5 +81,8 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
     return response.status(401).json({ error: 'unauthorized' })
   }
 })
+
+// Mount the comments router
+blogsRouter.use('/:blogId/comments', commentsRouter)
 
 module.exports = blogsRouter
