@@ -165,7 +165,7 @@ const App = () => {
 
   const HomeView = () => (
     <div>
-      <Togglable buttonLabel={'add blog'} ref={blogFormRef}>
+      <Togglable buttonLabel={'create new'} ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
@@ -259,15 +259,29 @@ const App = () => {
   return (
     <>
       <div>
-        <h1>blogs</h1>
-
         {user ? (
-          <div>
-            <p>
-              {user.name} logged in{' '}
-              <button onClick={handleLogout}>logout</button>
-            </p>
-          </div>
+          <>
+            <nav>
+              <div>
+                <Link className="nav-link" to="/">
+                  blogs
+                </Link>
+                <Link className="nav-link" to="/users">
+                  users
+                </Link>
+              </div>
+              <div>
+                <p>
+                  {user.name} logged in{' '}
+                  <button onClick={handleLogout}>logout</button>
+                </p>
+              </div>
+            </nav>
+
+            <div>
+              <h1>blog app</h1>
+            </div>
+          </>
         ) : (
           loginView()
         )}
