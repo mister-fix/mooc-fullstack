@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, Route, Routes, useParams } from 'react-router-dom';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
@@ -15,6 +16,7 @@ import { setNotification } from './reducers/notificationReducer';
 import { clearUser, setUser } from './reducers/userReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import usersService from './services/users';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ const App = () => {
     return sortedBlogs;
   });
   const user = useSelector((state) => state.user?.user || null);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -34,6 +37,17 @@ const App = () => {
 
       // verifying token validity by attempting to retrieve blogs
       dispatch(initializeBlogs());
+
+      const fetchUsers = async () => {
+        try {
+          const users = await usersService.getAll();
+          setUsers(users); // Set the users data
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      };
+
+      fetchUsers();
     }
   }, [dispatch]);
 
@@ -149,18 +163,8 @@ const App = () => {
     </div>
   );
 
-  const blogView = () => (
+  const HomeView = () => (
     <div>
-      <div>
-        <h2>blogs</h2>
-
-        <Notification />
-
-        <p>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </p>
-      </div>
-
       <Togglable buttonLabel={'add blog'} ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
@@ -178,7 +182,105 @@ const App = () => {
     </div>
   );
 
-  return <div>{user === null ? loginView() : blogView()}</div>;
+  const BlogView = () => {
+    const { id } = useParams();
+    const blog = blogs.find((b) => b.id === id);
+
+    if (!blog) {
+      return <div>Blog not found.</div>;
+    }
+
+    return (
+      <div>
+        <h2>{blog.title}</h2>
+        <Link to={`${blog.url}`}>{blog.url}</Link>
+        <div>
+          {blog.likes} likes{' '}
+          <button onClick={(event) => handleLike(event, blog.id)}>like</button>
+        </div>
+      </div>
+    );
+  };
+
+  const UsersView = () => {
+    return (
+      <div>
+        <div>
+          <h2>Users</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>blogs created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>
+                    <Link to={`/users/${user.id}`}>{user.name}</Link>
+                  </td>
+                  <td>{user.blogs.length}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  const UserView = () => {
+    const { id } = useParams();
+    const user = users.find((u) => u.id === id);
+
+    if (!user) {
+      return <div>User not found.</div>;
+    }
+
+    return (
+      <div>
+        <h2>{user.name}</h2>
+
+        <div>
+          <h3>added blogs</h3>
+
+          <ul>
+            {user.blogs.map((blog) => (
+              <li key={blog.id}>{blog.title}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div>
+        <h1>blogs</h1>
+
+        {user ? (
+          <div>
+            <p>
+              {user.name} logged in{' '}
+              <button onClick={handleLogout}>logout</button>
+            </p>
+          </div>
+        ) : (
+          loginView()
+        )}
+      </div>
+
+      <Routes>
+        <Route index element={<HomeView />} />
+        <Route path="/users" element={<UsersView />} />
+        <Route path="/users/:id" element={<UserView />} />
+        <Route path="/blogs/:id" element={<BlogView />} />
+      </Routes>
+    </>
+  );
 };
 
 export default App;
