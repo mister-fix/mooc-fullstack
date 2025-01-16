@@ -1,7 +1,12 @@
 const mongoose = require('mongoose')
 
 const commentSchema = new mongoose.Schema({
-  body: String,
+  content: { type: String, required: true },
+  blog: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog',
+    required: true,
+  },
 })
 
 commentSchema.set('toJSON', {
