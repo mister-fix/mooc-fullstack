@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Blog = ({ blog, handleLike, handleDelete }) => {
   const [visibility, setVisibility] = useState(false);
@@ -26,22 +27,9 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 
   return (
     <div style={blogStyle} className="blog">
-      <p className="blog-title">{blog.title}</p>
-      <p className="blog-author">{blog.author}</p>{' '}
-      <button onClick={toggleVisibility}>{visibility ? 'hide' : 'view'}</button>
-      <div style={showWhenVisible}>
-        <p className="blog-url">{blog.url}</p>
-        <p className="blog-likes">
-          {blog.likes} likes{' '}
-          <button onClick={(event) => handleLike(event, blog.id)}>like</button>
-        </p>
-        {/* <p>{blog.user.name}</p>*/}
-        {matchUser() && (
-          <button onClick={(event) => handleDelete(event, blog.id)}>
-            remove
-          </button>
-        )}
-      </div>
+      <Link to={`blogs/${blog.id}`} className="blog-title">
+        {blog.title}
+      </Link>
     </div>
   );
 };
