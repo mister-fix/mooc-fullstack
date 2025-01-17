@@ -198,6 +198,18 @@ const App = () => {
           {blog.likes} likes{' '}
           <button onClick={(event) => handleLike(event, blog.id)}>like</button>
         </div>
+        <div>
+          <h3>comments</h3>
+          {blog.comments && blog.comments.length > 0 ? (
+            <ul>
+              {blog.comments.map((comment, index) => (
+                <li key={comment.id}>{comment.content}</li> // assuming comment is a string, adjust if needed
+              ))}
+            </ul>
+          ) : (
+            <p>No comments.</p>
+          )}
+        </div>
       </div>
     );
   };
