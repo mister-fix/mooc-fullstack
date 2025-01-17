@@ -27,7 +27,7 @@ export const initializeBlogs = () => {
   return async (dispatch) => {
     const blogs = await blogService.getAll();
     console.log('Fetched blogs:', blogs);
-    await dispatch(setBlogs(blogs));
+    dispatch(setBlogs(blogs));
   };
 };
 
