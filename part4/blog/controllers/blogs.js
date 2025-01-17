@@ -4,12 +4,14 @@ const { userExtractor } = require('../utils/middleware')
 const commentsRouter = require('./comment')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  const blogs = await Blog.find({})
+    .populate('user', { username: 1, name: 1 })
+    .populate('comments')
   response.json(blogs)
 })
 
 blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
+  const blog = await Blog.findById(request.params.id).populate('comments')
   if (blog) {
     response.json(blog)
   } else {
@@ -36,6 +38,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
     url: body.url,
     likes: body.likes || 0,
     user: user.id,
+    comments: body.comments ?? [],
   })
 
   const savedBlog = await blog.save()
