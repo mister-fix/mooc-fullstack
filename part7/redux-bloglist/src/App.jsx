@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, Route, Routes, useParams } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';
+import BlogView from './components/BlogView';
+// import HomeView from './components/HomeView';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
+// import LoginView from './components/LoginView';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import UsersView from './components/UsersView';
+import UserView from './components/UserView';
 import {
   createBlog,
   deleteBlog,
@@ -145,7 +150,7 @@ const App = () => {
     blogService.setToken(null);
   };
 
-  const loginView = () => (
+  const LoginView = () => (
     <div>
       <h2>log in to application</h2>
 
@@ -182,92 +187,6 @@ const App = () => {
     </div>
   );
 
-  const BlogView = () => {
-    const { id } = useParams();
-    const blog = blogs.find((b) => b.id === id);
-
-    if (!blog) {
-      return <div>Blog not found.</div>;
-    }
-
-    return (
-      <div>
-        <h2>{blog.title}</h2>
-        <Link to={`${blog.url}`}>{blog.url}</Link>
-        <div>
-          {blog.likes} likes{' '}
-          <button onClick={(event) => handleLike(event, blog.id)}>like</button>
-        </div>
-        <div>
-          <h3>comments</h3>
-          {blog.comments && blog.comments.length > 0 ? (
-            <ul>
-              {blog.comments.map((comment, index) => (
-                <li key={comment.id}>{comment.content}</li> // assuming comment is a string, adjust if needed
-              ))}
-            </ul>
-          ) : (
-            <p>No comments.</p>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const UsersView = () => {
-    return (
-      <div>
-        <div>
-          <h2>Users</h2>
-
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>blogs created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <Link to={`/users/${user.id}`}>{user.name}</Link>
-                  </td>
-                  <td>{user.blogs.length}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  };
-
-  const UserView = () => {
-    const { id } = useParams();
-    const user = users.find((u) => u.id === id);
-
-    if (!user) {
-      return <div>User not found.</div>;
-    }
-
-    return (
-      <div>
-        <h2>{user.name}</h2>
-
-        <div>
-          <h3>added blogs</h3>
-
-          <ul>
-            {user.blogs.map((blog) => (
-              <li key={blog.id}>{blog.title}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
       <div>
@@ -295,15 +214,18 @@ const App = () => {
             </div>
           </>
         ) : (
-          loginView()
+          LoginView()
         )}
       </div>
 
       <Routes>
         <Route index element={<HomeView />} />
-        <Route path="/users" element={<UsersView />} />
-        <Route path="/users/:id" element={<UserView />} />
-        <Route path="/blogs/:id" element={<BlogView />} />
+        <Route path="/users" element={<UsersView users={users} />} />
+        <Route path="/users/:id" element={<UserView users={users} />} />
+        <Route
+          path="/blogs/:id"
+          element={<BlogView handleLike={handleLike} />}
+        />
       </Routes>
     </>
   );
