@@ -7,7 +7,7 @@ const HomeView = ({ blogFormRef, addBlog, handleLike, handleDelete }) => {
   const blogs = useSelector((state) => state.blogs);
 
   return (
-    <div>
+    <div className="container">
       <Togglable buttonLabel={'create new'} ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>

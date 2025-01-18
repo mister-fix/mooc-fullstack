@@ -3,9 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, Route, Routes } from 'react-router-dom';
 import BlogView from './components/BlogView';
 // import HomeView from './components/HomeView';
-import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 // import LoginView from './components/LoginView';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import Table from 'react-bootstrap/Table';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import UsersView from './components/UsersView';
@@ -157,59 +162,84 @@ const App = () => {
       <Notification />
 
       <form onSubmit={handleLogin}>
-        <div>
-          username: <input type="text" name="username" />
-        </div>
-        <div>
-          password: <input type="password" name="password" />
-        </div>
-        <button type="submit">login</button>
+        <Form.Group>
+          <Form.Label>username:</Form.Label>
+          <Form.Control type="text" name="username" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>password:</Form.Label>
+          <Form.Control type="password" name="password" />
+        </Form.Group>
+        <Button type="submit" className="my-2">
+          login
+        </Button>
       </form>
     </div>
   );
 
-  const HomeView = () => (
-    <div>
-      <Togglable buttonLabel={'create new'} ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
+  const HomeView = () => {
+    return (
+      user && (
+        <div className="container">
+          <Togglable buttonLabel={'create new'} ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
 
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-          />
-        ))}
-    </div>
-  );
+          <div className="my-5">
+            <Table striped bordered hover>
+              <tbody>
+                {blogs
+                  .sort((a, b) => b.likes - a.likes)
+                  .map((blog) => (
+                    <tr key={blog.id}>
+                      <td>
+                        <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                          {blog.title}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          </div>
+        </div>
+      )
+    );
+  };
 
   return (
     <>
-      <div>
+      <div className="container">
         {user ? (
           <>
-            <nav>
-              <div>
-                <Link className="nav-link" to="/">
-                  blogs
-                </Link>
-                <Link className="nav-link" to="/users">
-                  users
-                </Link>
-              </div>
-              <div>
-                <p>
-                  {user.name} logged in{' '}
-                  <button onClick={handleLogout}>logout</button>
-                </p>
-              </div>
-            </nav>
+            <Navbar expand="lg" className="bg-body-tertiary">
+              <Container>
+                <Navbar.Brand href="#home">Blog App</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                  <Nav className="me-auto">
+                    <Nav.Link href="#" as="span">
+                      <Link to="/">Blogs</Link>
+                    </Nav.Link>
+                    <Nav.Link href="#" as="span">
+                      <Link to="/users">Users</Link>
+                    </Nav.Link>
+                  </Nav>
+                  <Nav className="ms-auto">
+                    <Nav.Link href="#" as="span" className="my-auto">
+                      <span>{user.name} logged in</span>
+                    </Nav.Link>
+                    <Nav.Link href="#" as="span" className="ms-auto">
+                      <Button variant="primary" onClick={handleLogout}>
+                        logout
+                      </Button>
+                    </Nav.Link>
+                  </Nav>
+                </Navbar.Collapse>
+              </Container>
+            </Navbar>
 
-            <div>
+            <div className="my-4">
               <h1>blog app</h1>
             </div>
           </>

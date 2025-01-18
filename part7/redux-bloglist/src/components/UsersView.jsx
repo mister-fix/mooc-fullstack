@@ -1,16 +1,24 @@
+import Table from 'react-bootstrap/Table';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const UsersView = ({ users }) => {
+  const user = useSelector((state) => state.user);
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div>
+    <div className="container">
       <div>
         <h2>Users</h2>
 
-        <table>
+        <Table striped bordered>
           <thead>
             <tr>
-              <th></th>
-              <th>blogs created</th>
+              <th>All users</th>
+              <th>Blogs created</th>
             </tr>
           </thead>
           <tbody>
@@ -23,7 +31,7 @@ const UsersView = ({ users }) => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     </div>
   );

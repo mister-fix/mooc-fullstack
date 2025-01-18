@@ -22,14 +22,6 @@ const BlogView = ({ handleLike }) => {
     try {
       await blogService.addComment(blog.id, comment);
 
-      // Dispatch the updated comments array to the reducer
-      // dispatch(
-      //   updateBlogComments({
-      //     blogId: blog.id,
-      //     comments: updatedBlog.comments,
-      //   }),
-      // );
-
       dispatch(getAllBlogs());
 
       event.target.reset(); // Clear the input field
@@ -39,7 +31,7 @@ const BlogView = ({ handleLike }) => {
   };
 
   return (
-    <div>
+    <div className="container my-4">
       <h2>{blog.title}</h2>
       <Link to={`${blog.url}`}>{blog.url}</Link>
       <div>
