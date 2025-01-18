@@ -1,10 +1,12 @@
 // BlogView.jsx
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import { getAllBlogs } from '../reducers/blogsReducer';
+import blogService from '../services/blogs';
 
 const BlogView = ({ handleLike }) => {
-  // Destructure handleLike from props
+  const dispatch = useDispatch();
   const { id } = useParams();
   const blogs = useSelector((state) => state.blogs);
   const blog = blogs.find((b) => b.id === id);
@@ -12,6 +14,29 @@ const BlogView = ({ handleLike }) => {
   if (!blog) {
     return null;
   }
+
+  const postComment = async (event) => {
+    event.preventDefault();
+    const comment = event.target.comment.value;
+
+    try {
+      await blogService.addComment(blog.id, comment);
+
+      // Dispatch the updated comments array to the reducer
+      // dispatch(
+      //   updateBlogComments({
+      //     blogId: blog.id,
+      //     comments: updatedBlog.comments,
+      //   }),
+      // );
+
+      dispatch(getAllBlogs());
+
+      event.target.reset(); // Clear the input field
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
 
   return (
     <div>
@@ -26,6 +51,10 @@ const BlogView = ({ handleLike }) => {
       </div>
       <div>
         <h3>comments</h3>
+        <form onSubmit={postComment}>
+          <input type="text" name="comment" />
+          <button type="submit">add comment</button>
+        </form>
         {blog.comments && blog.comments.length > 0 ? (
           <ul>
             {blog.comments.map((comment) => (
@@ -33,7 +62,7 @@ const BlogView = ({ handleLike }) => {
             ))}
           </ul>
         ) : (
-          <p>No comments yet.</p>
+          <p style={{ marginTop: 20 }}>No comments yet.</p>
         )}
       </div>
     </div>
