@@ -5,14 +5,9 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { useCreateBlog } from "./hooks/useBlogMutations";
 import { useNotification } from "./providers/NotificationContext";
-import {
-  createBlog,
-  getBlogs,
-  removeBlog,
-  setToken,
-  updateBlog,
-} from "./services/blogs";
+import { getBlogs, removeBlog, setToken, updateBlog } from "./services/blogs";
 import loginService from "./services/login";
 
 // * DONE: Retrieving and rendering blog posts using React Query.
@@ -26,6 +21,7 @@ const App = () => {
   const blogFormRef = useRef();
   const { showNotification } = useNotification();
   const queryClient = useQueryClient();
+  const { mutate: createBlog } = useCreateBlog();
 
   const {
     isPending,
@@ -100,11 +96,16 @@ const App = () => {
         ...blogObject,
         user: { username: user.username, name: user.name, id: user.id }, // Add user details here
       };
-      const returnedBlog = await createBlog(blogToCreate);
-      const { title, author } = returnedBlog;
 
-      setBlogs(blogs.concat(returnedBlog));
-      showNotification(`A new blog "${title}" by ${author} has been added.`, 5);
+      createBlog(blogToCreate, {
+        onSuccess: (newBlog) => {
+          const { title, author } = newBlog;
+          showNotification(
+            `A new blog "${title}" by ${author} has been added.`,
+            5,
+          );
+        },
+      });
     } catch (err) {
       console.error("Error creating blog:", err);
       showNotification("Error posting blog.", 5);
