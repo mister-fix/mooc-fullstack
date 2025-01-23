@@ -4,6 +4,7 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { useNotification } from "./NotificationContext";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -12,8 +13,8 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [notification, setNotification] = useState("");
   const blogFormRef = useRef();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
@@ -36,16 +37,6 @@ const App = () => {
     }
   }, []);
 
-  const triggerNotification = (message, duration) => {
-    setNotification(message);
-
-    const timer = setTimeout(() => {
-      setNotification("");
-    }, duration * 1000);
-
-    return () => clearTimeout(timer);
-  };
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -60,10 +51,10 @@ const App = () => {
       setPassword("");
 
       await blogService.getAll().then((blogs) => setBlogs(blogs));
-      triggerNotification(`Welcome back, ${user.name}!`, 5);
+      showNotification(`Welcome back, ${user.name}!`, 5);
     } catch (err) {
       console.error("Error logging in:", err);
-      triggerNotification("Wrong username or password.", 5);
+      showNotification("Wrong username or password.", 5);
     }
   };
 
@@ -82,7 +73,7 @@ const App = () => {
       const existingBlog = blogs.find((b) => b.title === blogObject.title);
 
       if (existingBlog) {
-        triggerNotification(
+        showNotification(
           `Blog with title "${blogObject.title}" already exists.`,
           5,
         );
@@ -97,13 +88,10 @@ const App = () => {
       const { title, author } = returnedBlog;
 
       setBlogs(blogs.concat(returnedBlog));
-      triggerNotification(
-        `A new blog "${title}" by ${author} has been added.`,
-        5,
-      );
+      showNotification(`A new blog "${title}" by ${author} has been added.`, 5);
     } catch (err) {
       console.error("Error creating blog:", err);
-      triggerNotification("Error posting blog.", 5);
+      showNotification("Error posting blog.", 5);
     }
   };
 
@@ -119,7 +107,7 @@ const App = () => {
       });
     } catch (err) {
       console.error("Error liking blog:", err);
-      triggerNotification("Error liking blog", 5);
+      showNotification("Error liking blog", 5);
     }
   };
 
@@ -134,7 +122,7 @@ const App = () => {
       if (accept) {
         await blogService.remove(id).then(() => {
           setBlogs(blogs.filter((blog) => blog.id !== id));
-          triggerNotification(
+          showNotification(
             `Blog "${title}" by ${author} has been removed from the server.`,
             5,
           );
@@ -142,7 +130,7 @@ const App = () => {
       }
     } catch (err) {
       console.error("Error deleting blog:", err);
-      triggerNotification("Error deleting blog", 5);
+      showNotification("Error deleting blog", 5);
     }
   };
 
@@ -151,7 +139,7 @@ const App = () => {
       <div>
         <h1>log in to application</h1>
 
-        <Notification message={notification} />
+        <Notification />
 
         <form onSubmit={handleLogin} className="login-form">
           <div>
@@ -184,7 +172,7 @@ const App = () => {
         <div>
           <h1>blogs</h1>
 
-          <Notification message={notification} />
+          <Notification />
 
           <p className="user-name">
             {user.name} logged in <button onClick={handleLogout}>logout</button>
