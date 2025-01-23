@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import "./app.css";
 import Blog from "./components/Blog";
@@ -5,35 +6,50 @@ import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useNotification } from "./providers/NotificationContext";
-import blogService from "./services/blogs";
+import {
+  createBlog,
+  getBlogs,
+  removeBlog,
+  setToken,
+  updateBlog,
+} from "./services/blogs";
 import loginService from "./services/login";
 
+// * DONE: Retrieving and rendering blog posts using React Query.
+// TODO: Ensure that creating, liking, and deleting blogs works.
+
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const blogFormRef = useRef();
   const { showNotification } = useNotification();
+  const queryClient = useQueryClient();
+
+  const {
+    isPending,
+    isError,
+    data: blogs,
+    error,
+  } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: getBlogs,
+    enabled: !!user, // Fetch blogs only if a user is logged in
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  console.log("blogs:", blogs);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
 
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON); // Fixing JSON.parse here
-      blogService.setToken(user.token);
 
-      // verifying token validity by attempting to retrieve blogs
-      blogService
-        .getAll()
-        .then((blogs) => {
-          setUser(user);
-          setBlogs(blogs);
-        })
-        .catch((error) => {
-          console.log("Invalid or expired token", error);
-          handleLogout();
-        });
+      setUser(user); //Ensure the user is set
+      setToken(user.token); // Set the token for authenticated requests
     }
   }, []);
 
@@ -44,13 +60,13 @@ const App = () => {
       const user = await loginService.login({ username, password });
 
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      blogService.setToken(user.token);
+      setToken(user.token);
 
       setUser(user);
       setUsername("");
       setPassword("");
 
-      await blogService.getAll().then((blogs) => setBlogs(blogs));
+      // await blogService.getAll().then((blogs) => setBlogs(blogs));
       showNotification(`Welcome back, ${user.name}!`, 5);
     } catch (err) {
       console.error("Error logging in:", err);
@@ -61,9 +77,9 @@ const App = () => {
   const handleLogout = () => {
     console.log("Successfully logged out.");
     window.localStorage.removeItem("loggedBlogAppUser");
-    blogService.setToken(null);
+    setToken(null);
     setUser(null);
-    setBlogs([]);
+    queryClient.removeQueries(["blogs"]); // Clear cached blogs on logout
   };
 
   const addBlog = async (blogObject) => {
@@ -84,7 +100,7 @@ const App = () => {
         ...blogObject,
         user: { username: user.username, name: user.name, id: user.id }, // Add user details here
       };
-      const returnedBlog = await blogService.create(blogToCreate);
+      const returnedBlog = await createBlog(blogToCreate);
       const { title, author } = returnedBlog;
 
       setBlogs(blogs.concat(returnedBlog));
@@ -102,7 +118,7 @@ const App = () => {
       const blog = blogs.find((b) => b.id === id);
       const updatedBlog = { ...blog, likes: blog.likes + 1 };
 
-      await blogService.update(id, updatedBlog).then((returnedBlog) => {
+      await updateBlog(id, updatedBlog).then((returnedBlog) => {
         setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
       });
     } catch (err) {
@@ -120,7 +136,7 @@ const App = () => {
       const accept = window.confirm(`Delete blog "${title}" by ${author}?`);
 
       if (accept) {
-        await blogService.remove(id).then(() => {
+        await removeBlog(id).then(() => {
           setBlogs(blogs.filter((blog) => blog.id !== id));
           showNotification(
             `Blog "${title}" by ${author} has been removed from the server.`,
@@ -183,18 +199,22 @@ const App = () => {
           <BlogForm createBlog={addBlog} />
         </Togglable>
 
-        <div>
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                handleLike={handleLike}
-                handleDelete={handleDelete}
-              />
-            ))}
-        </div>
+        {isPending && <div>Loading blogs...</div>}
+
+        {blogs && (
+          <div>
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  handleLike={handleLike}
+                  handleDelete={handleDelete}
+                />
+              ))}
+          </div>
+        )}
       </div>
     );
   };
