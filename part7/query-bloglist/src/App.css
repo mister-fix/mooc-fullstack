@@ -1,0 +1,40 @@
+.login-form {
+  margin-top: 20px;
+}
+.login-form > div:not(:last-of-type) {
+  margin-bottom: 0.5em;
+}
+.login-form > button[type="submit"] {
+  margin-top: 0.5em;
+}
+
+.notification {
+  padding: 1em;
+  margin: 1em 0;
+  border: 1px solid black;
+  border-radius: 0.5em;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.notification.notification-error {
+  background-color: red;
+}
+
+.user-name {
+  margin: 0.5em 0;
+}
+
+.blog {
+  padding: 0.25em;
+  border: 1px solid black;
+}
+.blog:not(:last-of-type) {
+  margin-bottom: 0.25em;
+}
+.blog .blog-title {
+  font-size: 1.05em;
+  font-weight: 500;
+}
+.blog .blog-author {
+  font-size: 0.95em;
+  margin: 0.25em 0;
+}
