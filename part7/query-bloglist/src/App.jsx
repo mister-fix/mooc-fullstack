@@ -4,7 +4,7 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import { useNotification } from "./NotificationContext";
+import { useNotification } from "./providers/NotificationContext";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
