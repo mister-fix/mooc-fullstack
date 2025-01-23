@@ -6,11 +6,12 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs", "node_modules"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
   settings: { react: { version: "18.2" } },
-  plugins: ["react-refresh"],
+  plugins: ["react-refresh", "prettier"],
   overrides: [
     {
       env: {
@@ -24,6 +25,7 @@ module.exports = {
   ],
 
   rules: {
+    "prettier/prettier": ["error", { singleQuote: false, semi: true }],
     indent: ["error", 2, { SwitchCase: 1 }],
     quotes: ["error", "double"],
     semi: ["error", "always"],
