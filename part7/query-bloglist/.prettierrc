@@ -20,7 +20,7 @@
   "overrides":
     [
       { "files": "*.{cmp,page}", "options": { "parser": "html" } },
-      { "files": ".*hbs", "options": { "printWidth": 120 } },
+      { "files": ".*hbs", "options": { "printWidth": 120 } }
     ],
-  "plugins": ["prettier-plugin-organize-imports"],
+  "plugins": ["prettier-plugin-organize-imports"]
 }
