@@ -8,6 +8,7 @@ import { useUser } from "./providers/UserContext";
 import { getBlogs } from "./services/blogs";
 import loginService from "./services/login";
 import usersService from "./services/users";
+import BlogView from "./views/BlogView";
 import HomeView from "./views/HomeView";
 import LoginView from "./views/LoginView";
 import UsersView from "./views/UsersView";
@@ -92,6 +93,10 @@ const App = () => {
               />
               <Route path="/users" element={<UsersView users={users} />} />
               <Route path="/users/:id" element={<UserView users={users} />} />
+              <Route
+                path="/blogs/:id"
+                element={<BlogView users={users} blogs={blogs} />}
+              />
             </Routes>
           </div>
         </>
