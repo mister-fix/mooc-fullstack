@@ -19,8 +19,17 @@
   background-color: red;
 }
 
-.users-view {
+.users-view,
+.user-view {
   margin: 1em 0;
+}
+
+.user-view .user-blogs {
+  margin: 1em 0;
+}
+
+.user-view .user-blogs .user-blogs-heading {
+  margin: 0 0 0.5em 0;
 }
 
 .user-name {
