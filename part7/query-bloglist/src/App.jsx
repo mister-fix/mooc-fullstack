@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./app.css";
 import Notification from "./components/Notification";
@@ -6,14 +7,30 @@ import { useNotification } from "./providers/NotificationContext";
 import { useUser } from "./providers/UserContext";
 import { getBlogs } from "./services/blogs";
 import loginService from "./services/login";
+import usersService from "./services/users";
 import HomeView from "./views/HomeView";
 import LoginView from "./views/LoginView";
 import UsersView from "./views/UsersView";
+import UserView from "./views/UserView";
 
 const App = () => {
   const queryClient = useQueryClient();
+  const [users, setUsers] = useState([]);
   const { showNotification } = useNotification();
   const { user, setUser, clearUser } = useUser();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await usersService.getAll();
+        setUsers(users); // Set the users data
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const {
     isPending,
@@ -73,7 +90,8 @@ const App = () => {
                   <HomeView user={user} blogs={blogs} isPending={isPending} />
                 }
               />
-              <Route path="/users" element={<UsersView />} />
+              <Route path="/users" element={<UsersView users={users} />} />
+              <Route path="/users/:id" element={<UserView users={users} />} />
             </Routes>
           </div>
         </>
