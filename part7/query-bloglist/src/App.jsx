@@ -5,9 +5,13 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import { useCreateBlog } from "./hooks/useBlogMutations";
+import {
+  useCreateBlog,
+  useDeleteBlog,
+  useLikeBlog,
+} from "./hooks/useBlogMutations";
 import { useNotification } from "./providers/NotificationContext";
-import { getBlogs, removeBlog, setToken, updateBlog } from "./services/blogs";
+import { getBlogs, setToken } from "./services/blogs";
 import loginService from "./services/login";
 
 // * DONE: Retrieving and rendering blog posts using React Query.
@@ -22,6 +26,8 @@ const App = () => {
   const { showNotification } = useNotification();
   const queryClient = useQueryClient();
   const { mutate: createBlog } = useCreateBlog();
+  const { mutate: likeBlog } = useLikeBlog();
+  const { mutate: deleteBlog } = useDeleteBlog();
 
   const {
     isPending,
@@ -79,75 +85,65 @@ const App = () => {
   };
 
   const addBlog = async (blogObject) => {
-    try {
-      blogFormRef.current.toggleVisibility();
+    blogFormRef.current.toggleVisibility();
 
-      const existingBlog = blogs.find((b) => b.title === blogObject.title);
+    const existingBlog = blogs.find((b) => b.title === blogObject.title);
 
-      if (existingBlog) {
+    if (existingBlog) {
+      showNotification(
+        `Blog with title "${blogObject.title}" already exists.`,
+        5,
+      );
+      return;
+    }
+
+    const blogToCreate = {
+      ...blogObject,
+      user: { username: user.username, name: user.name, id: user.id }, // Add user details here
+    };
+
+    createBlog(blogToCreate, {
+      onSuccess: (newBlog) => {
+        const { title, author } = newBlog;
         showNotification(
-          `Blog with title "${blogObject.title}" already exists.`,
+          `A new blog "${title}" by ${author} has been added.`,
           5,
         );
-        return;
-      }
-
-      const blogToCreate = {
-        ...blogObject,
-        user: { username: user.username, name: user.name, id: user.id }, // Add user details here
-      };
-
-      createBlog(blogToCreate, {
-        onSuccess: (newBlog) => {
-          const { title, author } = newBlog;
-          showNotification(
-            `A new blog "${title}" by ${author} has been added.`,
-            5,
-          );
-        },
-      });
-    } catch (err) {
-      console.error("Error creating blog:", err);
-      showNotification("Error posting blog.", 5);
-    }
+      },
+    });
   };
 
   const handleLike = async (event, id) => {
     event.preventDefault();
 
-    try {
-      const blog = blogs.find((b) => b.id === id);
-      const updatedBlog = { ...blog, likes: blog.likes + 1 };
+    const blog = blogs.find((b) => b.id === id);
 
-      await updateBlog(id, updatedBlog).then((returnedBlog) => {
-        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
-      });
-    } catch (err) {
-      console.error("Error liking blog:", err);
-      showNotification("Error liking blog", 5);
-    }
+    likeBlog(
+      { id, updatedBlog: { ...blog, likes: blog.likes + 1 } },
+      {
+        onError: () => {
+          showNotification("Error liking blog", 5);
+        },
+      },
+    );
   };
 
   const handleDelete = async (event, id) => {
     event.preventDefault();
 
-    try {
-      const blog = blogs.find((b) => b.id === id);
-      const { title, author } = blog;
-      const accept = window.confirm(`Delete blog "${title}" by ${author}?`);
+    const blog = blogs.find((b) => b.id === id);
+    const { title, author } = blog;
+    const accept = window.confirm(`Delete blog "${title}" by ${author}?`);
 
-      if (accept) {
-        await removeBlog(id).then(() => {
-          setBlogs(blogs.filter((blog) => blog.id !== id));
-          showNotification(
-            `Blog "${title}" by ${author} has been removed from the server.`,
-            5,
-          );
-        });
-      }
-    } catch (err) {
-      console.error("Error deleting blog:", err);
-      showNotification("Error deleting blog", 5);
+    if (accept) {
+      deleteBlog(id, {
+        onSuccess: () => {
+          showNotification(`Blog "${title}: by ${author} has been removed.`, 5);
+        },
+        onError: () => {
+          showNotification("Error removing blog", 5);
+        },
+      });
     }
   };
 
