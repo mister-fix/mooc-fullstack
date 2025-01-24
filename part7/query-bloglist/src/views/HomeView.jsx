@@ -40,7 +40,9 @@ const HomeView = ({ user, isPending, blogs }) => {
   };
 
   return (
-    <div>
+    <div className="home-view">
+      <h2>blog app</h2>
+
       <Togglable buttonLabel={"add blog"} ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
