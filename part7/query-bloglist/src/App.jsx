@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import "./app.css";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
@@ -11,20 +11,15 @@ import {
   useLikeBlog,
 } from "./hooks/useBlogMutations";
 import { useNotification } from "./providers/NotificationContext";
-import { getBlogs, setToken } from "./services/blogs";
+import { useUser } from "./providers/UserContext";
+import { getBlogs } from "./services/blogs";
 import loginService from "./services/login";
 
-// * DONE: Retrieving and rendering blog posts using React Query.
-// TODO: Ensure that creating, liking, and deleting blogs works.
-
 const App = () => {
-  // const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const blogFormRef = useRef();
   const { showNotification } = useNotification();
   const queryClient = useQueryClient();
+  const { user, setUser, clearUser } = useUser();
   const { mutate: createBlog } = useCreateBlog();
   const { mutate: likeBlog } = useLikeBlog();
   const { mutate: deleteBlog } = useDeleteBlog();
@@ -42,33 +37,15 @@ const App = () => {
     refetchOnWindowFocus: false,
   });
 
-  console.log("blogs:", blogs);
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
-
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON); // Fixing JSON.parse here
-
-      setUser(user); //Ensure the user is set
-      setToken(user.token); // Set the token for authenticated requests
-    }
-  }, []);
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
+    const username = event.target.username.value;
+    const password = event.target.password.value;
     try {
       const user = await loginService.login({ username, password });
 
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setToken(user.token);
-
       setUser(user);
-      setUsername("");
-      setPassword("");
-
-      // await blogService.getAll().then((blogs) => setBlogs(blogs));
       showNotification(`Welcome back, ${user.name}!`, 5);
     } catch (err) {
       console.error("Error logging in:", err);
@@ -78,9 +55,7 @@ const App = () => {
 
   const handleLogout = () => {
     console.log("Successfully logged out.");
-    window.localStorage.removeItem("loggedBlogAppUser");
-    setToken(null);
-    setUser(null);
+    clearUser();
     queryClient.removeQueries(["blogs"]); // Clear cached blogs on logout
   };
 
@@ -157,21 +132,11 @@ const App = () => {
         <form onSubmit={handleLogin} className="login-form">
           <div>
             <label htmlFor="username">Username</label>:{" "}
-            <input
-              type="text"
-              id="username"
-              name="username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
+            <input type="text" id="username" name="username" />
           </div>
           <div>
             <label htmlFor="password">Password</label>{" "}
-            <input
-              type="password"
-              id="password"
-              name="password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
+            <input type="password" id="password" name="password" />
           </div>
           <button type="submit">login</button>
         </form>
