@@ -71,18 +71,36 @@ const BlogView = ({ blogs }) => {
 
   return (
     <div className="blog-view">
-      <h3 className="blog-title">{blog.title}</h3>
-      <Link className="blog-link">{blog.url}</Link>
-      <p className="blog-likes">
-        {blog.likes} likes{" "}
-        <button onClick={(event) => handleLike(event, blog.id)}>like</button>
-      </p>
-      <p>added by {blog.user.name}</p>
-      {matchUser() && (
-        <button onClick={(event) => handleDelete(event, blog.id)}>
-          remove
-        </button>
-      )}
+      <div>
+        <h3 className="blog-title">{blog.title}</h3>
+        <Link className="blog-link">{blog.url}</Link>
+        <p className="blog-likes">
+          {blog.likes} likes{" "}
+          <button onClick={(event) => handleLike(event, blog.id)}>like</button>
+        </p>
+        <p>added by {blog.user.name}</p>
+        {matchUser() && (
+          <button
+            style={{ marginTop: 12 }}
+            onClick={(event) => handleDelete(event, blog.id)}
+          >
+            remove
+          </button>
+        )}
+      </div>
+
+      <div className="blog-view-comments">
+        <h3 style={{ marginTop: 30, marginBottom: 12 }}>comments</h3>
+        {blog.comments && blog.comments.length > 0 ? (
+          <ul>
+            {blog.comments.map((c) => (
+              <li key={c.id}>{c.content}</li>
+            ))}
+          </ul>
+        ) : (
+          <p style={{ marginTop: 12 }}>No comments yet.</p>
+        )}
+      </div>
     </div>
   );
 };
