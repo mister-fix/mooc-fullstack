@@ -1,3 +1,29 @@
+.navigation {
+  height: 45px;
+  background: #D3D3D3;
+  display: flex;
+  align-items: center;
+}
+.navigation .navigation-nav {
+  list-style-type: none;
+  display: flex;
+}
+.navigation .navigation-nav .nav-link:not(:last-of-type) {
+  margin-right: 0.5em;
+}
+.navigation .navigation-nav .nav-link {
+  text-decoration: underline;
+}
+.navigation .navigation-user {
+  margin-left: 1em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.navigation .navigation-user > button {
+  margin-left: 0.5em;
+}
+
 .login-form {
   margin-top: 20px;
 }
@@ -19,6 +45,7 @@
   background-color: red;
 }
 
+.home-view,
 .blog-view,
 .users-view,
 .user-view {
@@ -39,7 +66,6 @@
 .user-view .user-blogs {
   margin: 1em 0;
 }
-
 .user-view .user-blogs .user-blogs-heading {
   margin: 0 0 0.5em 0;
 }
