@@ -63,6 +63,10 @@ h1 {
   line-height: 1.1;
 }
 
+h2 {
+  font-size: 1.5em;
+}
+
 button {
   padding: 0.25em;
   font-size: 0.85em;
