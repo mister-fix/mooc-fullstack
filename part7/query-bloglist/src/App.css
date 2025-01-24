@@ -19,9 +19,21 @@
   background-color: red;
 }
 
+.blog-view,
 .users-view,
 .user-view {
   margin: 1em 0;
+}
+
+.blog-view .blog-title {
+  font-size: 1.5em;
+  margin: 0 0 0.5em 0;
+}
+.blog-view .blog-link {
+  margin-bottom: 1em;
+}
+.blog-view .blog-likes {
+  margin: 0.5em 0 0.2em 0;
 }
 
 .user-view .user-blogs {
