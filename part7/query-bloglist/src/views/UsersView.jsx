@@ -1,22 +1,6 @@
-import { useEffect, useState } from "react";
-import usersService from "../services/users";
+import { Link } from "react-router-dom";
 
-const UsersView = () => {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await usersService.getAll();
-        setUsers(users); // Set the users data
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
+const UsersView = ({ users }) => {
   return (
     <div className="users-view">
       <h2>Users</h2>
@@ -31,7 +15,9 @@ const UsersView = () => {
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
-              <td>{u.name}</td>
+              <td>
+                <Link to={`/users/${u.id}`}>{u.name}</Link>
+              </td>
               <td>{u.blogs.length}</td>
             </tr>
           ))}
