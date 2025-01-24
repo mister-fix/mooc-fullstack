@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import "./app.css";
 import Notification from "./components/Notification";
 import { useNotification } from "./providers/NotificationContext";
@@ -72,16 +72,23 @@ const App = () => {
     <div>
       {user ? (
         <>
-          <div>
-            <h1>blogs</h1>
+          <nav className="navigation">
+            <ul className="navigation-nav">
+              <li className="nav-link">
+                <Link to="/">blogs</Link>
+              </li>
+              <li className="nav-link">
+                <Link to="/users">users</Link>
+              </li>
+            </ul>
 
-            <Notification />
-
-            <p className="user-name">
+            <div className="navigation-user">
               {user.name} logged in{" "}
               <button onClick={handleLogout}>logout</button>
-            </p>
-          </div>
+            </div>
+          </nav>
+
+          <Notification />
 
           <div>
             <Routes>
