@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createBlog, removeBlog, updateBlog } from "../services/blogs";
+import {
+  addComment,
+  createBlog,
+  removeBlog,
+  updateBlog,
+} from "../services/blogs";
 
 export const useCreateBlog = () => {
   const queryClient = useQueryClient();
@@ -47,6 +52,24 @@ export const useDeleteBlog = () => {
     },
     onError: (error) => {
       console.error("Error deleting blog:", error);
+    },
+  });
+};
+
+export const useAddComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, comment }) => addComment(id, comment),
+    onSuccess: (newComment, { id }) => {
+      queryClient.setQueryData(["blog", id], (oldBlog) => {
+        if (!oldBlog) return;
+
+        return {
+          ...oldBlog,
+          comments: [...oldBlog.comments, newComment],
+        };
+      });
     },
   });
 };
