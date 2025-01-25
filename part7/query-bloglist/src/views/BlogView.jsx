@@ -1,26 +1,37 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDeleteBlog, useLikeBlog } from "../hooks/useBlogMutations";
+import {
+  useAddComment,
+  useDeleteBlog,
+  useLikeBlog,
+} from "../hooks/useBlogMutations";
 import { useNotification } from "../providers/NotificationContext";
+import { getBlogById } from "../services/blogs";
 
 const BlogView = ({ blogs }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
   const { id } = useParams();
-  const { mutate: likeBlog } = useLikeBlog();
-  const { mutate: deleteBlog } = useDeleteBlog();
   const { showNotification } = useNotification();
 
-  if (!blogs || blogs.length === 0) {
-    return <div>Loading...</div>;
-  }
+  const {
+    data: blog,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["blog"],
+    queryFn: () => getBlogById(id),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
-  const blog = blogs.find((b) => b.id === id);
+  const { mutate: likeBlog } = useLikeBlog();
+  const { mutate: deleteBlog } = useDeleteBlog();
+  const { mutate: addComment } = useAddComment();
 
-  if (!blog) {
-    return <div>Blog not found.</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !blog) return <div>Blog not found.</div>;
 
   const matchUser = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
@@ -44,6 +55,24 @@ const BlogView = ({ blogs }) => {
         onError: () => {
           showNotification("Error liking blog", 5);
         },
+      },
+    );
+  };
+
+  const handleCommenting = async (event) => {
+    event.preventDefault();
+
+    const comment = { content: event.target.comment.value };
+
+    addComment(
+      { id: blog.id, comment },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["blog"]);
+          event.target.reset;
+          showNotification("Comment added", 5);
+        },
+        onError: () => showNotification("Error adding comment", 5),
       },
     );
   };
@@ -91,8 +120,16 @@ const BlogView = ({ blogs }) => {
 
       <div className="blog-view-comments">
         <h3 style={{ marginTop: 30, marginBottom: 12 }}>comments</h3>
+
+        <form onSubmit={handleCommenting}>
+          <div style={{ display: "flex" }}>
+            <input type="text" id="comment" name="comment" />
+            <button type="submit">add comment</button>
+          </div>
+        </form>
+
         {blog.comments && blog.comments.length > 0 ? (
-          <ul>
+          <ul style={{ marginTop: 16 }}>
             {blog.comments.map((c) => (
               <li key={c.id}>{c.content}</li>
             ))}
