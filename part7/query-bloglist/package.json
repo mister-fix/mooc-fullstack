@@ -2,7 +2,7 @@
   "name": "query-bloglist",
   "description": "React blogging app built with @tanstack/react-query",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
