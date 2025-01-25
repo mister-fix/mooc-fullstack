@@ -16,6 +16,14 @@ export const getBlogs = async () => {
   return response.data;
 };
 
+export const getBlogById = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  const response = await axios.get(`${baseUrl}/${id}`, config);
+  return response.data;
+};
+
 export const createBlog = async (blogObject) => {
   const config = {
     headers: { Authorization: token },
@@ -29,6 +37,18 @@ export const updateBlog = async (id, blogObject) => {
     headers: { Authorization: token },
   };
   const response = await axios.put(`${baseUrl}/${id}`, blogObject, config);
+  return response.data;
+};
+
+export const addComment = async (id, comment) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  const response = await axios.post(
+    `${baseUrl}/${id}/comments`,
+    comment,
+    config,
+  );
   return response.data;
 };
 
