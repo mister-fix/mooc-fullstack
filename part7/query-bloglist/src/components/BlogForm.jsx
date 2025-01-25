@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button, Form } from "react-bootstrap";
 
 const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState("");
@@ -16,42 +17,46 @@ const BlogForm = ({ createBlog }) => {
   };
 
   return (
-    <div className="blog-form">
-      <h2>create new blog</h2>
+    <div className="blog-form bg-light p-4 rounded border">
+      <h2>Create new blog</h2>
 
-      <form onSubmit={createNewBlog}>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            name="title"
-            id="title"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+      <Form onSubmit={createNewBlog}>
+        <div className="d-flex w-100 justify-content-between mt-3">
+          <Form.Group style={{ width: "49%" }}>
+            <Form.Label>Title:</Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              id="title"
+              value={title}
+              onChange={({ target }) => setTitle(target.value)}
+            />
+          </Form.Group>
+          <Form.Group style={{ width: "49%" }}>
+            <Form.Label>Author:</Form.Label>
+            <Form.Control
+              type="text"
+              name="author"
+              id="author"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+          </Form.Group>
         </div>
-        <div>
-          <label htmlFor="author">Author:</label>
-          <input
-            type="text"
-            name="author"
-            id="author"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="url">URL:</label>
-          <input
+        <Form.Group className="mt-3">
+          <Form.Label>URL:</Form.Label>
+          <Form.Control
             type="text"
             name="url"
             id="url"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
-        </div>
-        <button type="submit">create</button>
-      </form>
+        </Form.Group>
+        <Button type="submit" className="mt-3">
+          Create
+        </Button>
+      </Form>
     </div>
   );
 };

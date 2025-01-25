@@ -1,7 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Container, Dropdown, Nav, Navbar } from "react-bootstrap";
 import { Link, Route, Routes } from "react-router-dom";
 import "./app.css";
+import Icon from "./components/Icon";
 import Notification from "./components/Notification";
 import { useNotification } from "./providers/NotificationContext";
 import { useUser } from "./providers/UserContext";
@@ -72,21 +74,43 @@ const App = () => {
     <div>
       {user ? (
         <>
-          <nav className="navigation">
-            <ul className="navigation-nav">
-              <li className="nav-link">
-                <Link to="/">blogs</Link>
-              </li>
-              <li className="nav-link">
-                <Link to="/users">users</Link>
-              </li>
-            </ul>
+          <Navbar expand="lg" className="bg-primary">
+            <Container>
+              <Navbar.Brand as="span">
+                <Link to="/" className="text-white">
+                  Blog App
+                </Link>
+              </Navbar.Brand>
+              <Navbar.Toggle aria-controls="main-navbar-nav" />
+              <Navbar.Collapse id="main-navbar-nav">
+                <Nav className="me-auto">
+                  <Nav.Link as="span">
+                    <Link to="/" className="text-white">
+                      Blogs
+                    </Link>
+                  </Nav.Link>
+                  <Nav.Link as="span">
+                    <Link to="/users" className="text-white">
+                      Users
+                    </Link>
+                  </Nav.Link>
+                </Nav>
+                <Nav>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="" id="dropdown-basic">
+                      <span className="text-white">{user.username}</span>
+                    </Dropdown.Toggle>
 
-            <div className="navigation-user">
-              {user.name} logged in{" "}
-              <button onClick={handleLogout}>logout</button>
-            </div>
-          </nav>
+                    <Dropdown.Menu>
+                      <Dropdown.Item href="#/action-3" onClick={handleLogout}>
+                        Logout <Icon name="LogOut" size={14} />
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
 
           <Notification />
 

@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import Blog from "../components/Blog";
+import { Container, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import BlogForm from "../components/BlogForm";
 import Togglable from "../components/Togglable";
 import { useCreateBlog } from "../hooks/useBlogMutations";
@@ -41,23 +42,40 @@ const HomeView = ({ user, isPending, blogs }) => {
 
   return (
     <div className="home-view">
-      <h2>blog app</h2>
+      <Container>
+        {/* <h2>blog app</h2> */}
 
-      <Togglable buttonLabel={"add blog"} ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
+        <Togglable buttonLabel={"Add blog"} ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} />
+        </Togglable>
 
-      {isPending && <div>Loading blogs...</div>}
+        {isPending && <div>Loading blogs...</div>}
 
-      {blogs && (
-        <div>
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog key={blog.id} blog={blog} />
-            ))}
-        </div>
-      )}
+        {blogs && (
+          <Table striped bordered>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              {blogs
+                .sort((a, b) => b.likes - a.likes)
+                .map((blog) => (
+                  <tr key={blog.id}>
+                    <td className="py-3 d-flex">
+                      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </td>
+                    <td className="py-3">
+                      <p className="ms-2">{blog.author}</p>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        )}
+      </Container>
     </div>
   );
 };
