@@ -98,6 +98,11 @@ let books = [
 */
 
 const typeDefs = `
+	type Author {
+		name: String!
+		bookCount: Int!
+	}
+
     type Book {
         title: String!
         author: String!
@@ -109,6 +114,7 @@ const typeDefs = `
         bookCount: Int!
         authorCount: Int!
         allBooks: [Book!]!
+		allAuthors: [Author!]!
     }
 `;
 
@@ -127,6 +133,17 @@ const resolvers = {
 			return arrOfAuthors.length;
 		},
 		allBooks: () => books,
+		allAuthors: () => {
+			return Object.values(
+				books.reduce((arr, book) => {
+					if (!arr[book.author]) {
+						arr[book.author] = { name: book.author, bookCount: 0 };
+					}
+					arr[book.author].bookCount++;
+					return arr;
+				}, {})
+			);
+		},
 	},
 };
 
